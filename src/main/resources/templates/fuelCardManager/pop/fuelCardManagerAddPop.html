@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+<link rel="stylesheet" href="/lib/layui/css/layui.css" media="all"/>
+<link rel="stylesheet" href="/lib/layui/css/global.css" media="all"/>
+<script src="/lib/layui/layui.all.js" charset="utf-8"></script>
+<script src="/js/fuelCardManager/jquery-3.0.0.min.js"></script>
+<script src="/lib/angular/angular.min.js"></script>
+<script src="/lib/angular/angular-cookies.min.js"></script>
+<script src="/lib/angular/tm.pagination.js"></script>
+<!--弹出层-->
+<div id="card-add-fuelCard" style="display: none;">
+    <form style="margin-right: 60px; margin-top: 10px" class="layui-form" action="">
+        <div class="layui-row">
+            <div class="layui-col-xs6" style="height: 60px;">
+                <div class="grid-demo">
+                    <div class="layui-form-item" style="margin-bottom: 0px;">
+                        <label class="layui-form-label">油卡商家:</label>
+                        <div class="layui-input-block">
+                            <select id="pop-add-cardMerchant" class="user-select">
+                                <option value="all" selected>请选择</option>
+                                <option value="0">中石油</option>
+                                <option value="1">中石化</option>
+                            </select>
+                            <span id="company" style="color: red;"></span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs6" style="height: 60px;">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">油卡类型:</label>
+                        <div class="layui-input-block">
+                            <select id="pop-add-cardType" class="user-select" onchange="selectCardType(this)">
+                                <option value="all" selected>请选择</option>
+                                <option value="0">加油卡主卡</option>
+                                <option value="1">加油卡副卡</option>
+                            </select>
+                            <span id="carKind" style="color: red;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-xs6" style="height: 60px;">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">主卡卡号:</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="pop-add-masterCardNumber" style="padding: 0"
+                                   lay-verify="number">
+                            <span id="masterCar" style="color: red;"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item" id="pop-add-viceCardNumber_parent">
+                        <label class="layui-form-label">副卡卡号:</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="pop-add-viceCardNumber" style="padding: 0"
+                                   lay-verify="number">
+                            <span id="viceCard" style="color: red;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-xs12" style="height: 60px;">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">查询密码:</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="pop-add-password">
+                            <span id="password" style="color: red;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-xs12" style="height: 60px;">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">绑定车牌号:</label>
+                        <div class="layui-input-block">
+                            <input id="pop-add-input-carNumber" class="layui-input" ng-change="getCarNumberNotBundled()"
+                                   ng-model="bundleCarNumber" ng-blur="ifShowCarNumberListFalse();"
+                                   ng-focus="ifShowCarNumberListTrue();" placeholder="请输入车牌号">
+
+                            <dl class="layui-anim layui-anim-upbit"
+                                style="display:block;border:1px solid red;margin-top:10px;padding:15px 17px;"
+                                ng-if="ifShowCarNumberList&&carNumberList.length>0" ng-mouseenter="carNumberListTrue()"
+                                ng-mouseleave="carNumberListFalse()">
+                                <dd ng-click="selectCarNumber(item)" style="margin-top:4px;"
+                                    onmouseover="$(this).css('color','red').css('font-weight','bold').css('font-size','20px')"
+                                    onmouseleave="$(this).css('color','black').css('font-weight','normal').css('font-size','14px')"
+                                    ng-repeat="item in carNumberList">{{item}}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-xs12">
+                <div class="grid-demo" style="color:red;margin-left:21%;margin-top:-4%;" id="popAddErrorDiv">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

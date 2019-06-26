@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.index.NationalVehicleInspectionMapper">
+    <select id="getNowExpiredInspection"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalVehicleInspectionPO">
+        SELECT
+        COUNT(1) AS numberInspection
+        FROM
+        car
+        WHERE (
+        YEAR(NOW()) = YEAR(validity_date)
+        AND MONTH(NOW()) &gt; MONTH(validity_date)
+        AND annual_inspection_status = '当前年检'
+        )
+        OR (
+        YEAR(NOW()) &gt; YEAR(validity_date)
+        AND annual_inspection_status = '当前年检'
+        )
+    </select>
+
+    <select id="getThirtyDaysExpiredInspection"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalVehicleInspectionPO">
+
+
+        SELECT
+        COUNT(1) AS numberInspection
+        FROM
+        car
+        WHERE (
+        (YEAR(validity_date) = YEAR(NOW()))
+        AND (MONTH(validity_date) - MONTH(NOW())) &lt; 1
+        AND (MONTH(validity_date) - MONTH(NOW())) &gt;= 0
+        AND annual_inspection_status = '当前年检'
+        )
+
+    </select>
+
+    <select id="getSixtyDaysExpiredInspection"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalVehicleInspectionPO">
+
+        SELECT COUNT(1) AS numberInspection FROM car WHERE (YEAR(validity_date)=YEAR(NOW()) AND
+        MONTH(validity_date)-MONTH(NOW()) &lt;2 AND annual_inspection_status='当前年检' AND MONTH(validity_date) &gt;=
+        MONTH(NOW() )
+        )
+        OR (
+        YEAR(validity_date) - YEAR(NOW()) = 1
+        AND MONTH(validity_date) - MONTH(NOW()) = - 11 AND annual_inspection_status='当前年检'
+        )
+    </select>
+</mapper>

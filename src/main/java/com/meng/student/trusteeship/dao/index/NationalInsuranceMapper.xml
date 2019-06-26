@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.index.NationalInsuranceMapper">
+
+    <select id="getNowExpiredInsurance" resultType="com.meng.student.trusteeship.entity.index.po.NationalInsurancePO">
+
+        SELECT COUNT(1) AS numberInsurance FROM insurance,car WHERE car.`annual_inspection_status`='当前年检' AND stop_date
+        IN (SELECT MAX(stop_date)
+        FROM insurance GROUP BY insurance.`car_number` HAVING MAX(stop_date) &lt;NOW() ) AND
+        car.`car_number`=insurance.`car_number`
+    </select>
+
+    <select id="getThirtyDaysExpiredInsurance"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalInsurancePO">
+
+        SELECT
+        COUNT(1) AS numberInsurance
+        FROM
+        insurance JOIN
+        car
+        ON car.`annual_inspection_status` = '当前年检'
+
+
+        AND (TO_DAYS(stop_date )- TO_DAYS(NOW())) &lt;= 30
+        AND TO_DAYS(stop_date) &gt;= TO_DAYS(NOW())
+        AND car.`car_number` = insurance.`car_number`
+
+        JOIN
+        (SELECT car_number,MAX(stop_date) sd FROM insurance GROUP BY car_number) tmp
+        ON insurance.`car_number` = tmp.`car_number` AND insurance.stop_date=tmp.sd
+
+    </select>
+
+    <select id="getSixthDaysExpiredInsurance"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalInsurancePO">
+
+        SELECT
+        COUNT(1) AS numberInsurance
+        FROM
+        insurance JOIN
+        car
+        ON car.`annual_inspection_status` = '当前年检'
+
+
+        AND (TO_DAYS(stop_date )- TO_DAYS(NOW())) &lt;= 60
+        AND TO_DAYS(stop_date) &gt;= TO_DAYS(NOW())
+        AND car.`car_number` = insurance.`car_number`
+
+        JOIN
+        (SELECT car_number,MAX(stop_date) sd FROM insurance GROUP BY car_number) tmp
+        ON insurance.`car_number` = tmp.`car_number` AND insurance.stop_date=tmp.sd
+    </select>
+</mapper>

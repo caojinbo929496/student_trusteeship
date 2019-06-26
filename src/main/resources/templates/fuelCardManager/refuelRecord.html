@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head"></head>
+<body ng-app="scriptApp" ng-controller="refuelRecordCtr">
+
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body layui-main">
+
+        <div class="x-nav">
+            <div class="tips-header" style="">
+                <a href="#">
+                    <h2>加油记录</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a href="#">车辆管理</a><span lay-separator="">/</span>
+                              <a><cite>加油记录</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <div style="margin:auto 10%;">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">城市：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" class="layui-input" ng-model="vo.city">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">加油司机：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" class="layui-input" ng-model="vo.driverName">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">所属仓库：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" class="layui-input" ng-model="vo.wareHouse">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">车牌号码：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" class="layui-input" ng-model="vo.carNumber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">加油时间：</label>
+
+                            <div class="layui-input-block">
+                                <div class="layui-input-inline">
+                                    <input type="text" id="startTime" ng-model="vo.startTime"
+                                           lay-verify="date"
+                                           placeholder=""
+                                           autocomplete="off" class="layui-input" style="width:138%;"/>
+                                </div>
+                                <div class="date-time-center" style="margin-left: 11.5%;">
+                                    -
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="endTime" ng-model="vo.endTime" lay-verify="date"
+                                           placeholder=""
+                                           autocomplete="off" class="layui-input" style="width:138%;"/>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-btn-group" style="margin-left: 40%; margin-top:2%;">
+                    <button class="layui-btn" ng-click="searchClick()">查询</button>
+                    <button class="layui-btn " ng-click="resetClick()">清空</button>
+                    <button class="layui-btn " ng-click="exportClick()">导出</button>
+                </div>
+
+            </div>
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                <legend>加油记录列表</legend>
+                <table class="layui-table" lay-even="" lay-skin="row">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>城市</th>
+                        <th>车牌号码</th>
+                        <th>车辆品牌</th>
+                        <th>车牌类型</th>
+                        <th>加油司机</th>
+                        <th>车辆上次里程数</th>
+                        <th>录入里程数</th>
+                        <th>加油时间</th>
+                        <th>加油金额</th>
+                        <th>定位地址</th>
+                        <th>里程照片</th>
+
+                    </tr>
+                    </thead>
+                    <tbody id="refuelingRecordTable">
+                    <tr ng-repeat="item in refuelingList">
+                        <td ng-bind="($index + 1)+((pageOperation.currentPage-1)*pageOperation.itemsPerPage)"></td>
+                        <td ng-bind="item.city"></td>
+                        <td ng-bind="item.carNumber"></td>
+                        <td ng-bind="item.carBrand"></td>
+                        <td ng-bind="item.vehicleType"></td>
+                        <td ng-bind="item.refuelingDriverName"></td>
+                        <td ng-bind="item.lastMileage"></td>
+                        <td ng-bind="item.currentMileage"></td>
+                        <td ng-bind="item.refuelingTimeMilis | date:'yyyy-MM-dd'"></td>
+                        <td ng-bind="item.refuelingMoney"></td>
+                        <td ng-bind="item.tradingPosition"></td>
+                        <td>
+                            <span class="layui-btn layui-btn-xs"
+                                  lay-event="detail"
+                                  title="绑定" data-ng-click="showImg(this)">查看里程照片<span
+                                    style="display: none;" ng-bind="item.imgUrl"></span></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="page-right" style="padding-right: 5%;">
+                    <tm-pagination conf="pageOperation"></tm-pagination>
+                </div>
+            </fieldset>
+        </fieldset>
+    </div>
+</div>
+<input type="hidden" id="wcxCarNumber" th:value="${wcxCarNumber}"/>
+
+</body>
+<script src="/js/fuelCardManager/refuelRecord.js"></script>
+<script>
+    var start, end;
+
+    //月份修正
+    function doneTime(date) {
+        return {
+            year: date.year,
+            month: date.month - 1,
+            date: date.date
+        }
+    };
+    var start = laydate.render({
+        elem: '#startTime', //指定元素
+        done: function (value, date) {
+            //将结束日的初始值设定为开始日
+            end.config.min = doneTime(date);
+            end.config.value = doneTime(date);
+        }
+    });
+    var end = laydate.render({
+        elem: '#endTime', //指定元素
+        done: function (value, date) {
+            //结束日选好后，重置开始日的最大日期
+            start.config.max = doneTime(date);
+        }
+    });
+
+</script>
+</html>

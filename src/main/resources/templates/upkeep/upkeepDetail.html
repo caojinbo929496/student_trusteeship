@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<script src="/js/fuelCardManager/jquery-3.0.0.min.js" charset="utf-8"></script>
+<style type="text/css">
+    .jqzoom {
+        cursor: pointer;
+    }
+</style>
+<body ng-app="scriptApp" ng-controller="upkeepDetailReferCtl">
+
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <input type="hidden" th:value="${upkeepId}" id="upkeepId"/>
+    <div class="layui-body layui-main" id="scrollBody">
+
+        <div class="x-nav">
+            <div class="tips-header">
+                <a href="#">
+                    <h2>保养详情</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a href="#">车辆管理</a><span lay-separator="">/</span>
+                              <a href="/upkeep">保养记录</a><span lay-separator="">/</span>
+                              <a><cite>保养详情</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field" style="margin-top: 20px;">
+            <legend>车辆保养信息</legend>
+            <table class="layui-table" lay-even="" lay-skin="row">
+                <colgroup>
+                    <col width="150">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td>车牌号码</td>
+                    <td ng-bind="upkeepDetail.carNumber">鄂A88888</td>
+                </tr>
+                <tr>
+                    <td>保养时间</td>
+                    <td ng-bind="upkeepDetail.date | date:'yyyy-MM-dd hh:mm:ss'">1982-01-01</td>
+                </tr>
+                <tr>
+                    <td>送保人</td>
+                    <td ng-bind="upkeepDetail.patenteName">如意</td>
+                </tr>
+                <tr>
+                    <td>保养单位</td>
+                    <td ng-bind="upkeepDetail.companyName">车轮滚滚 4S 店</td>
+                </tr>
+                <tr>
+                    <td> 保养地点</td>
+                    <td ng-bind="upkeepDetail.site">武汉市关山大道</td>
+                </tr>
+                <tr>
+                    <td> 保养费用(元)</td>
+                    <td ng-bind="upkeepDetail.mileage">6969</td>
+                </tr>
+                <tr>
+                    <td>保养内容</td>
+                    <td ng-bind="upkeepDetail.info">换机油</td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table" lay-even="" lay-skin="row">
+                <colgroup>
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td>
+                        保养清单照片
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img class="jqzoom" jqimg="{{temp.path}}" ng-repeat="temp in upkeepDetail.imageUpkeeps"
+                             onclick="viewPicture(this)" src="{{temp.path}}">
+                        <!--&nbsp;&nbsp;&nbsp;<img src="/images/upkeep/2.jpg">-->
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        保养缴费发票
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img class="jqzoom" ng-repeat="temp in upkeepDetail.imageUpkeepFrees"
+                             onclick="viewPicture(this)" src="{{temp.path}}">
+                        <!--&nbsp;&nbsp;&nbsp;<img src="/images/upkeep/2.jpg">-->
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+
+        </fieldset>
+        <div style="margin: 0 auto;text-align:center;">
+            <button class="layui-btn layui-btn-primary layui-btn-small"
+                    onclick="javascript:history.go(-1);"><i
+                    class="layui-icon" title="详情">&#xe603;</i>
+            </button>
+        </div>
+
+    </div>
+
+
+</div>
+<script src="/modules/upkeepDetail.js"></script>
+<script type="text/javascript">
+    function viewPicture(obj) {
+        var picture = $(obj);
+        var width = picture.attr("width");
+        var height = picture.attr("height");
+        var src = picture.attr("src");
+        var scaleWH = width / height;
+        var bigH = 600;
+        var bigW = scaleWH * bigH;
+        if (bigW > 900) {
+            bigW = 900;
+            bigH = bigW / scaleWH;
+        }
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 1,
+            shadeClose: true,
+            area: [bigW + 'px', bigH + 'px'], //宽高
+            content: "<img width='" + bigW + "' height='" + bigH + "' src=" + src + " />"
+        });
+    }
+</script>
+</body>
+</html>

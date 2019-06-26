@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.car.CarMapper">
+    <resultMap id="BaseResultMap" type="com.meng.student.trusteeship.entity.vehicle.po.CarPO">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="brand_model_number" property="brandModelNumber" jdbcType="VARCHAR"/>
+        <result column="owners" property="owners" jdbcType="VARCHAR"/>
+        <result column="warehouse" property="warehouse" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="vehicle_price" property="vehiclePrice" jdbcType="DECIMAL"/>
+        <result column="registration_time" property="registrationTime" jdbcType="TIMESTAMP"/>
+        <result column="validity_date" property="validityDate" jdbcType="TIMESTAMP"/>
+        <result column="vehicle_type" property="vehicleType" jdbcType="VARCHAR"/>
+        <result column="engine_number" property="engineNumber" jdbcType="VARCHAR"/>
+        <result column="frame_number" property="frameNumber" jdbcType="VARCHAR"/>
+        <result column="dare_of_issue" property="dareOfIssue" jdbcType="TIMESTAMP"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="nature_of_use" property="natureOfUse" jdbcType="VARCHAR"/>
+        <result column="annual_inspection_status" property="annualInspectionStatus" jdbcType="VARCHAR"/>
+        <result column="upload_time" property="uploadTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="AllCarInfoMap" type="com.meng.student.trusteeship.entity.vehicle.po.CarAllInfoPO">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="brand_model_number" property="brandModelNumber" jdbcType="VARCHAR"/>
+        <result column="owners" property="owners" jdbcType="VARCHAR"/>
+        <result column="warehouse" property="warehouse" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="vehicle_price" property="vehiclePrice" jdbcType="DECIMAL"/>
+        <result column="registration_time" property="registrationTime" jdbcType="TIMESTAMP"/>
+        <result column="validity_date" property="validityDate" jdbcType="TIMESTAMP"/>
+        <result column="vehicle_type" property="vehicleType" jdbcType="VARCHAR"/>
+        <result column="engine_number" property="engineNumber" jdbcType="VARCHAR"/>
+        <result column="frame_number" property="frameNumber" jdbcType="VARCHAR"/>
+        <result column="dare_of_issue" property="dareOfIssue" jdbcType="TIMESTAMP"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="nature_of_use" property="natureOfUse" jdbcType="VARCHAR"/>
+        <result column="annual_inspection_status" property="annualInspectionStatus" jdbcType="VARCHAR"/>
+        <result column="current_mileage" property="currentMileage" jdbcType="DECIMAL"/>
+        <result column="vice_card_number" property="viceCardNumber" jdbcType="VARCHAR"/>
+        <result column="violation_number" property="violationNumber" jdbcType="VARCHAR"/>
+        <result column="stop_date" property="stopDate" jdbcType="TIMESTAMP"/>
+        <result column="upload_time" property="uploadTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="ManagerCarAcceptMap" type="com.meng.student.trusteeship.entity.vehicle.po.ManegerCarAcceptPO">
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="validity_date" property="validityDate" jdbcType="TIMESTAMP"/>
+        <result column="stop_date" property="insuranceStopDate" jdbcType="TIMESTAMP"/>
+        <result column="trading_time" property="tradingTime" jdbcType="TIMESTAMP"/>
+        <result column="current_mileage" property="lastMileage" jdbcType="DECIMAL"/>
+        <result column="trading_money" property="tradingMoney" jdbcType="DECIMAL"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, city, brand_model_number, owners, warehouse, status, car_number, vehicle_price, registration_time,
+        validity_date, vehicle_type, engine_number, frame_number, annual_inspection_status, upload_time
+    </sql>
+    <select id="listCarAllInfo" resultMap="AllCarInfoMap" parameterType="java.util.Map">
+        select * from (SELECT * from car
+        where annual_inspection_status ='当前年检'
+        AND city LIKE '%${city}%' AND car_number LIKE '%${carNumber}%' AND warehouse LIKE '%${warehouse}%'
+        <if test="vehicleStatus != null">
+            AND status = #{vehicleStatus,jdbcType=TINYINT}
+        </if>
+        <if test="carCheckStartDate != null">
+            AND validity_date &gt;= #{carCheckStartDate,jdbcType=TINYINT}
+        </if>
+        <if test="carCheckStopDate != null">
+            AND validity_date &lt; #{carCheckStopDate,jdbcType=TINYINT}
+        </if>
+        ) t10
+        LEFT JOIN (select vice_card_number, bundle_plate_number as car_number from fuel_card ) t2 on t10.car_number =
+        t2.car_number
+        LEFT JOIN (select t4.car_number, count(status) as violation_number from (select * from violation where status =
+        0 ) t4 group by car_number) t5 on t10.car_number = t5.car_number
+        LEFT JOIN (select car_number as car_number, max(stop_date) as stop_date from insurance
+        group by car_number ) t6 ON t10.car_number = t6.car_number
+        <where>
+            <if test="violationStatus == false">
+                ISNULL(t5.violation_number)
+            </if>
+            <if test="violationStatus == true">
+                AND NOT ISNULL(t5.violation_number)
+            </if>
+            <if test="insuranceStartDate != null and insuranceStopDate == null">
+                AND t6.stop_date &gt; #{insuranceStartDate}
+            </if>
+            <if test="insuranceStopDate != null and insuranceStartDate == null">
+                AND t6.stop_date &lt; #{insuranceStopDate}
+            </if>
+            <if test="insuranceStopDate != null and insuranceStartDate!=null">
+                AND t6.stop_date &lt; #{insuranceStopDate} AND t6.stop_date &gt; #{insuranceStartDate}
+            </if>
+            <if test="insuranceIsNull == '1'.toString()">
+                AND NOT ISNULL(t6.stop_date)
+            </if>
+            <if test="insuranceIsNull == '2'.toString()">
+                AND ISNULL(t6.stop_date)
+            </if>
+            <if test="carCheckIsNull == '1'.toString()">
+                AND NOT ISNULL(t10.validity_date)
+            </if>
+            <if test="carCheckIsNull == '2'.toString()">
+                AND ISNULL(t10.validity_date)
+            </if>
+        </where>
+        <if test="queryStatus == null">
+            LIMIT #{currentPage},#{pageSize}
+        </if>
+
+    </select>
+
+    <select id="listWarehouseCarInfo" parameterType="java.util.Map"
+            resultType="com.meng.student.trusteeship.entity.vehicle.po.ManegerCarAcceptPO">
+        SELECT c.car_number carNumber,c.validity_date validityDate,i.stop_date insuranceStopDate,rifr.refuelingTime
+        tradingTime,
+        rifr.refuelingMoney tradingMoney,rifr.false_trading_time falseTradingTime
+        FROM car c LEFT JOIN insurance i ON i.car_number=c.car_number AND NOW()>=i.start_date AND i.stop_date>=NOW()
+        LEFT JOIN
+        (SELECT
+        fr.trading_time refuelingTime,
+        fr.trading_money refuelingMoney,
+        ri.trading_time false_trading_time,
+        fr.`bundle_plate_number`
+        FROM
+        refueling_image_record ri
+        LEFT JOIN (SELECT f.`bundle_plate_number`,r.`trading_money`,r.`trading_time`,r.`trading_position`,f.uuid FROM
+        fuel_card f,refueling_record r WHERE f.`uuid`=r.`fuel_card_uuid` AND r.`trading_type`=0) fr
+        ON 6000 >= ri.trading_time - fr.trading_time AND ri.`car_number`=fr.bundle_plate_number) rifr ON
+        c.car_number=rifr.`bundle_plate_number`
+        <where>
+            <if test="city!=null and city!=''">
+                c.city =#{city} and
+            </if>
+
+            <if test="warehouse!=null and warehouse!=''">
+                c.`warehouse` = #{warehouse} and
+            </if>
+
+            <if test="carNumber!=null and carNumber!=''">
+                c.`car_number` LIKE ('%',#{carNumber},'%') and
+            </if>
+            <if test="patenteNumber!=null and patenteNumber!=''">
+                p.number like concat('%',#{patenteNumber},'%') and
+            </if>
+            c.annual_inspection_status='当前年检'
+        </where>
+    </select>
+
+    <select id="insertCar" parameterType="com.meng.student.trusteeship.entity.vehicle.po.CarPO">
+        INSERT INTO car
+        (id, city, brand_model_number, owners, warehouse, status, car_number, vehicle_price, registration_time,
+        validity_date, vehicle_type, engine_number, frame_number, dare_of_issue, address, nature_of_use,
+        annual_inspection_status, upload_time)
+        VALUES
+        (#{id,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{brandModelNumber,jdbcType=VARCHAR},
+        #{owners,jdbcType=VARCHAR}, #{warehouse,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
+        #{carNumber,jdbcType=VARCHAR},
+        #{vehiclePrice,jdbcType=DECIMAL}, #{registrationTime,jdbcType=TIMESTAMP}, #{validityDate,jdbcType=TIMESTAMP},
+        #{vehicleType,jdbcType=VARCHAR}, #{engineNumber,jdbcType=VARCHAR}, #{frameNumber,jdbcType=VARCHAR},
+        #{dareOfIssue,jdbcType=TIMESTAMP}, #{address,jdbcType=VARCHAR}, #{natureOfUse,jdbcType=VARCHAR},
+        #{annualInspectionStatus,jdbcType=VARCHAR}, #{uploadTime,jdbcType=VARCHAR})
+    </select>
+
+    <select id="updateVehiclePrice" parameterType="com.meng.student.trusteeship.entity.vehicle.po.CarPO">
+        UPDATE car
+        SET vehicle_price = #{vehiclePrice,jdbcType=DECIMAL}
+        WHERE id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="changeYearCheckStatus" parameterType="java.util.Map">
+        UPDATE car
+        SET annual_inspection_status = #{annualInspectionStatus,jdbcType=VARCHAR}
+        WHERE car_number = #{carNumber,jdbcType=VARCHAR}
+    </select>
+
+    <select id="updateCar" parameterType="com.meng.student.trusteeship.entity.vehicle.po.CarPO">
+        UPDATE car
+        SET city = ##{city,jdbcType=VARCHAR} , brand_model_number = #{brandModelNumber,jdbcType=VARCHAR},
+        owners = #{owners,jdbcType=VARCHAR} , warehouse = #{warehouse,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT}, car_number = #{carNumber,jdbcType=VARCHAR},
+        vehicle_price = #{vehiclePrice,jdbcType=DECIMAL}, registration_time = #{registrationTime,jdbcType=TIMESTAMP},
+        validity_date = #{validityDate,jdbcType=TIMESTAMP}, vehicle_type = #{vehicleType,jdbcType=VARCHAR},
+        engine_number = #{engineNumber,jdbcType=VARCHAR}, frame_number = #{frameNumber,jdbcType=VARCHAR},
+        dare_of_issue = #{dareOfIssue,jdbcType=TIMESTAMP}, address = #{address,jdbcType=VARCHAR},
+        nature_of_use = #{natureOfUse,jdbcType=VARCHAR}, annual_inspection_status =
+        #{annualInspectionStatus,jdbcType=TIMESTAMP}
+        upload_time = #{uploadTime,jdbcType=VARCHAR}
+        WHERE car_number = #{carNumber,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getCarById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT *
+        FROM car WHERE id = #{id} AND annual_inspection_status = '当前年检'
+    </select>
+
+    <select id="listCarAllInsurance" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT *
+        FROM car WHERE car_number = #{carNumber, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getCarByCarNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT *
+        FROM car WHERE car_number = #{carNumber} AND annual_inspection_status = '当前年检' limit 0, 1
+    </select>
+
+    <select id="listCarByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        c.*
+        FROM
+        car c LEFT JOIN
+        insurance i ON c.`car_number`=i.`car_number`
+        <where>
+            c.annual_inspection_status = '当前年检'
+            AND (i.car_number IS NULL or c.vehicle_price IS NULL)
+            <if test="city != null and city!=''">
+                and c.city like concat('%', #{city},'%')
+            </if>
+            <if test="carNumber != null and carNumber!=''">
+                and c.car_number like concat('%', #{carNumber},'%')
+            </if>
+
+            <if test="warehouse != null and warehouse!=''">
+                and c.warehouse like concat('%', #{warehouse},'%')
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+
+            <if test="startDate != null">
+                and c.validity_date &gt; #{startDate}
+            </if>
+            <if test="endDate != null">
+                and c.validity_date &lt; #{endDate}
+            </if>
+
+        </where>
+        LIMIT #{currentPage},#{pageSize}
+    </select>
+
+    <select id="countCarByMap" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+        count(c.car_number)
+        FROM
+        car c LEFT JOIN
+        insurance i ON c.`car_number`=i.`car_number`
+        <where>
+            c.annual_inspection_status = '当前年检'
+            AND (i.car_number IS NULL or c.vehicle_price IS NULL)
+            <if test="city != null and city!=''">
+                and c.city like concat('%', #{city},'%')
+            </if>
+            <if test="carNumber != null and carNumber!=''">
+                and c.car_number like concat('%', #{carNumber},'%')
+            </if>
+
+            <if test="warehouse != null and warehouse!=''">
+                and c.warehouse like concat('%', #{warehouse},'%')
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+
+            <if test="startDate != null">
+                and c.validity_date &gt; #{startDate}
+            </if>
+            <if test="endDate != null">
+                and c.validity_date &lt; #{endDate}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="countCarAllInfo" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM (select * from (SELECT * from car
+        where annual_inspection_status ='当前年检'
+        AND city LIKE '%${city}%' AND car_number LIKE '%${carNumber}%' AND warehouse LIKE '%${warehouse}%'
+        <if test="vehicleStatus != null">
+            AND status = #{vehicleStatus,jdbcType=TINYINT}
+        </if>
+        <if test="carCheckStartDate != null">
+            AND validity_date &gt; #{carCheckStartDate,jdbcType=TINYINT}
+        </if>
+        <if test="carCheckStopDate != null">
+            AND validity_date &lt; #{carCheckStopDate,jdbcType=TINYINT}
+        </if>
+        ) t10
+        LEFT JOIN (select t0.vice_card_number as vice_card_number, t1.current_mileage, t0.bundle_plate_number as
+        car_number from fuel_card t0, refueling_record t1 where t0.uuid = t1.fuel_card_uuid and t0.last_recharge_time =
+        t1.trading_time) t2 on t10.car_number = t2.car_number
+        LEFT JOIN (select t4.car_number, count(status) as violation_number from (select * from violation where status =
+        0 ) t4 group by car_number) t5 on t10.car_number = t5.car_number
+        LEFT JOIN (select car_number as car_number, max(stop_date) as stop_date from insurance
+        <if test="insuranceStartDate != null and insuranceStopDate == null">
+            WHERE stop_date &gt; #{insuranceStartDate}
+        </if>
+        <if test="insuranceStopDate != null and insuranceStartDate == null">
+            WHERE stop_date &lt; #{insuranceStopDate}
+        </if>
+        <if test="insuranceStopDate != null and insuranceStartDate!=null">
+            WHERE stop_date &lt; #{insuranceStopDate} AND stop_date &gt; #{insuranceStartDate}
+        </if>
+        group by car_number ) t6 ON t10.car_number = t6.car_number
+        <if test="violationStatus == 0">
+            WHERE ISNULL(t5.violation_number);
+        </if>
+        <if test="violationStatus == 1">
+            WHERE NOT ISNULL(t5.violation_number);
+        </if>) t11
+    </select>
+
+    <select id="listCar" resultMap="BaseResultMap">
+        SELECT * FROM car
+        where annual_inspection_status = '当前年检'
+    </select>
+
+    <select id="conutCar" resultType="java.lang.Integer">
+        select count(*) from car WHERE annual_inspection_status = '当前年检'
+    </select>
+    <select id="listPartCar" resultType="com.meng.student.trusteeship.entity.vehicle.po.ToBeCompeteledCarPO">
+        SELECT
+        c.id,
+        c.city,
+        c.warehouse warehouse,
+        c.car_number carNumber,
+        c.brand_model_number brandModelNumber,
+        c.vehicle_type vehicleType,
+        c.status status
+        FROM
+        car c
+        where
+        (not exists (select ii.car_number from insurance ii where ii.`car_number`=c.`car_number` ) or
+        c.`vehicle_price` is null)
+        and annual_inspection_status='当前年检'
+    </select>
+
+    <select id="countPartCarByMap" parameterType="java.util.Map" resultType="Integer">
+        SELECT
+        count( c.id)
+        FROM
+        car c
+        <where>
+            (not exists (select ii.car_number from insurance ii where ii.`car_number`=c.`car_number` ) or
+            c.`vehicle_price` is null)
+            and annual_inspection_status='当前年检'
+            <if test="city != null and city!=''">
+                and c.city like concat('%', #{city},'%')
+            </if>
+            <if test="carNumber != null and carNumber!=''">
+                and c.car_number like concat('%', #{carNumber},'%')
+            </if>
+
+            <if test="warehouse != null and warehouse!=''">
+                and c.warehouse like concat('%', #{warehouse},'%')
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+
+            <if test="startDate != null">
+                and c.validity_date &gt; #{startDate}
+            </if>
+            <if test="endDate != null">
+                and c.validity_date &lt; #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="listPartCarByMap" parameterType="java.util.Map"
+            resultMap="BaseResultMap">
+        SELECT
+        c.*
+        FROM
+        car c
+        <where>
+            (not exists (select ii.car_number from insurance ii where ii.`car_number`=c.`car_number` ) or
+            c.`vehicle_price` is null)
+            and annual_inspection_status='当前年检'
+            <if test="city != null and city!=''">
+                and c.city like concat('%', #{city},'%')
+            </if>
+            <if test="carNumber != null and carNumber!=''">
+                and c.car_number like concat('%', #{carNumber},'%')
+            </if>
+
+            <if test="warehouse != null and warehouse!=''">
+                and c.warehouse like concat('%', #{warehouse},'%')
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+
+            <if test="startDate != null">
+                and c.validity_date &gt; #{startDate}
+            </if>
+            <if test="endDate != null">
+                and c.validity_date &lt; #{endDate}
+            </if>
+        </where>
+        LIMIT #{currentPage},#{pageSize}
+    </select>
+    <select id="listDriverLicense" parameterType="java.util.Map"
+            resultMap="BaseResultMap">
+        SELECT
+        c.*
+        FROM
+        car c
+        <where>
+            annual_inspection_status='当前年检'
+            <if test="endDate != null">
+                and c.validity_date &lt; #{endDate}
+            </if>
+            <if test="carNumber != null and carNumber!=''">
+                and c.car_number like concat('%', #{carNumber},'%')
+            </if>
+            <if test="startDate != null">
+                and c.validity_date &gt; #{startDate}
+            </if>
+            <if test="endDate != null">
+                and c.validity_date &lt; #{endDate}
+            </if>
+        </where>
+        LIMIT #{currentPage},#{pageSize}
+    </select>
+    <select id="countDriverLicense" parameterType="java.util.Map" resultType="Integer">
+        SELECT
+        count( c.id)
+        FROM
+        car c
+        <where>
+            annual_inspection_status='当前年检'
+            <if test="endDate != null">
+                and c.validity_date &lt; #{endDate}
+            </if>
+            <if test="carNumber != null and carNumber!=''">
+                and c.car_number like concat('%', #{carNumber},'%')
+            </if>
+            <if test="startDate != null">
+                and c.validity_date &gt; #{startDate}
+            </if>
+            <if test="endDate != null">
+                and c.validity_date &lt; #{endDate}
+            </if>
+        </where>
+    </select>
+    <insert id="insertVehiclePriceByCarId">
+        update `car` set vehicle_price = #{vehiclePrice} where `id`=#{carId}
+    </insert>
+</mapper>

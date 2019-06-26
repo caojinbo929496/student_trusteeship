@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.insurance.InsuranceMapper">
+    <resultMap id="BaseResultMap" type="com.meng.student.trusteeship.entity.vehicle.po.InsurancePO">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="start_date" property="startDate" jdbcType="TIMESTAMP"/>
+        <result column="stop_date" property="stopDate" jdbcType="TIMESTAMP"/>
+        <result column="insurance_fee" property="insuranceFee" jdbcType="DECIMAL"/>
+        <result column="cash_back_amount" property="cashBackAmount" jdbcType="DECIMAL"/>
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="operator_id" property="operatorId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="InsuranceAndImages" type="com.meng.student.trusteeship.entity.vehicle.po.InsuranceAndImagesPO">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="start_date" property="startDate" jdbcType="TIMESTAMP"/>
+        <result column="stop_date" property="stopDate" jdbcType="TIMESTAMP"/>
+        <result column="insurance_fee" property="insuranceFee" jdbcType="DECIMAL"/>
+        <result column="cash_back_amount" property="cashBackAmount" jdbcType="DECIMAL"/>
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="operator_id" property="operatorId" jdbcType="VARCHAR"/>
+        <collection property="insuranceImagePOS"
+                    ofType="com.meng.student.trusteeship.entity.vehicle.po.InsuranceImagePO">
+            <id column="id1" property="id"></id>
+            <result column="insurance_id" property="insuranceId"/>
+            <result column="car_number1" property="carNumber"/>
+            <result column="image_path" property="imagePath"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, start_date, stop_date, insurance_fee, insurance_fee, cash_back_amount, car_number, operatorId
+    </sql>
+
+    <select id="save" parameterType="com.meng.student.trusteeship.entity.vehicle.po.InsurancePO">
+        INSERT INTO insurance
+        (id, start_date, stop_date,insurance_fee, cash_back_amount, car_number, operator_id)
+        VALUES
+        (#{id,jdbcType=VARCHAR}, #{startDate,jdbcType=TIMESTAMP}, #{stopDate,jdbcType=TIMESTAMP},
+        #{insuranceFee,jdbcType=DECIMAL}, #{cashBackAmount,jdbcType=DECIMAL}, #{carNumber,jdbcType=VARCHAR},
+        #{operatorId,jdbcType=VARCHAR})
+    </select>
+
+    <select id="getByCarNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select a.* from insurance as a where start_date = (select max(start_date) from insurance where
+        a.car_number=car_number) and car_number=#{carNumber};
+    </select>
+
+    <select id="getAllByCarNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from insurance where car_number=#{carNumber};
+    </select>
+
+    <select id="deleteInsuranceById" parameterType="java.lang.String">
+        DELETE from insurance WHERE id = #{insuranceId}
+    </select>
+
+    <select id="getInsuranceAndImages" resultMap="InsuranceAndImages" parameterType="java.lang.String">
+        SELECT * FROM (SELECT * FROM insurance WHERE car_number LIKE '%${carNumber}%') t0 LEFT JOIN (SELECT * FROM
+        insurance_image WHERE car_number LIKE '%${carNumber}%') t1 ON t0.id = t1.insurance_id
+    </select>
+
+    <select id="listByCarNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * from insurance where car_number = #{carNumber}
+    </select>
+
+    <select id="getFreshInsuranceByCarNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT t0.* from insurance t0, (SELECT max(stop_date) as stopDate
+        FROM insurance WHERE car_number = #{carNumber}) t1 where t0.stop_date = t1.stopDate AND t0.car_number =
+        #{carNumber}
+    </select>
+    <select id="getInsuranceByCarNumberOfDate" resultMap="BaseResultMap"
+            parameterType="com.meng.student.trusteeship.entity.vehicle.Insurance">
+        SELECT * FROM insurance WHERE car_number=#{carNumber} ORDER BY stop_date DESC LIMIT 0,1;
+    </select>
+    <update id="updateInsuranceByCarNumberOfDate"
+            parameterType="com.meng.student.trusteeship.entity.vehicle.Insurance">
+        UPDATE
+        insurance
+        SET
+        start_date = #{startDate},
+        insurance_fee = #{insuranceFee},
+        cash_back_amount = #{cashBackAmount} ,
+        operator_id=#{operatorId}
+        WHERE id =#{id}
+    </update>
+
+</mapper>

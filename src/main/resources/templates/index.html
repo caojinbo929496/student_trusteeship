@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body layui-main" id="scrollBody">
+        <div class="x-nav">
+            <div class="tips-header">
+                <a href="#">
+                    <h2>首页</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a><cite>首页</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <div class="layui-row layui-col-space30">
+                <div class="layui-col-xs6">
+                    <div class="grid-demo">
+                        <table class="layui-table" lay-even>
+                            <tr>
+                                <th colspan="4">
+                                    <h3>全国车辆违章数据</h3></th>
+                            </tr>
+
+                            <tr>
+                                <td>当前未处理违章数</td>
+                                <td>总记分</td>
+                                <td>总罚款</td>
+                            </tr>
+
+                            <tr>
+                                <td><a href="/violation/violationList/1" style="color: red; text-decoration:underline;"><span
+                                        th:text="${national.unTreated}">4</span>条未处理违章</a></td>
+                                <td><span th:text="${national.deductMark}">6</span>分</td>
+                                <td><span th:text="${national.penalty}">400</span>元</td>
+                            </tr>
+
+                            <tr>
+                                <td>本月新违章数</td>
+                                <td>总记分</td>
+                                <td>总罚款</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/violation/violationList/2"
+                                       style="color:blue;text-decoration:underline;"><span
+                                            th:text="${thisMonthViolation.unTreated}">5</span>起违章</a>
+                                </td>
+                                <td><span th:text="${thisMonthViolation.deductMark}">6</span>分</td>
+                                <td><span th:text="${thisMonthViolation.penalty}">400</span>元</td>
+                            </tr>
+
+                            <tr>
+                                <td>近30天内违章数</td>
+                                <td>总记分</td>
+                                <td>总罚款</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/violation/violationList/3" style="color:blue;text-decoration:underline;"> <span
+                                            th:text="${thirtyDaysViolation.unTreated}">5</span>起违章</a>
+                                </td>
+                                <td><span th:text="${thirtyDaysViolation.deductMark}">1</span>分</td>
+                                <td><span th:text="${thirtyDaysViolation.penalty}">1200</span>元</td>
+                            </tr>
+
+                            <tr>
+                                <td>近60天内违章数</td>
+                                <td>总记分</td>
+                                <td>总罚款</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/violation/violationList/4"
+                                       style="color:blue;text-decoration:underline;"><span
+                                            th:text="${sixtyViolation.unTreated}">10</span>起违章</a></td>
+                                <td><span th:text="${sixtyViolation.deductMark}">24</span>分</td>
+                                <td><span th:text="${sixtyViolation.penalty}">1500</span>元</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="layui-col-xs6">
+                    <div class="grid-demo">
+                        <table class="layui-table" lay-even>
+                            <tr>
+                                <th colspan="4">
+                                    <h3>全国车辆保险、年检到期数据</h3></th>
+                            </tr>
+
+                            <tr>
+                                <td>当前已过期车辆保险</td>
+                                <td>30天内到期车辆保险</td>
+                                <td>近60天到期车辆保险</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a style="color:red; text-decoration:underline;"
+                                       href="/vehicle/vehicleQuery/1"><span
+                                            th:text="${nowExpiredInsurance.numberInsurance}">5</span>辆 </a>
+                                </td>
+                                <td>
+                                    <a style="color:blue;  text-decoration:underline; " href="/vehicle/vehicleQuery/2"> <span
+                                            th:text="${thirtyDaysExpiredInsurance.numberInsurance}">10</span>辆 </a>
+                                </td>
+                                <td style="color:blue;  text-decoration:underline;">
+                                    <a href="/vehicle/vehicleQuery/3" style="color:blue;"> <span
+                                            th:text="${sixthDaysExpiredInsurance.numberInsurance}">15</span>辆 </a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>当前已过期年检车辆</td>
+                                <td>30天内到期年检车辆</td>
+                                <td>近60天到期年检车辆</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/vehicle/vehicleQuery/4"
+                                       style="color:red;  text-decoration:underline;"><span
+                                            th:text="${nowExpiredInspection.numberInspection}">0</span>辆 </a>
+                                </td>
+                                <td>
+                                    <a style="color:blue;  text-decoration:underline;"
+                                       href="/vehicle/vehicleQuery/5"><span
+                                            th:text="${thirtyDaysExpiredInspection.numberInspection}">10</span>辆 </a>
+                                </td>
+                                <td>
+                                    <a style="color:blue;  text-decoration:underline;"
+                                       href="/vehicle/vehicleQuery/6"><span
+                                            th:text="${sixtyDaysExpiredInspection.numberInspection}">15</span>辆 </a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>当前已过期驾照</td>
+                                <td>30天内到期驾照</td>
+                                <td>近60天到期驾照</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a style="color:red;  text-decoration:underline;" href="/pastPatenteQuery/1"><span
+                                            th:text="${nowExpiredPatente.numberPatente}">5</span>人</a>
+                                </td>
+                                <td>
+                                    <a style="color:blue ; text-decoration:underline;" href="/pastPatenteQuery/2"><span
+                                            th:text="${thirtyExpiredPatente.numberPatente}">20</span>人 </a>
+                                </td>
+                                <td>
+                                    <a href="/pastPatenteQuery/3" style="color:blue;  text-decoration:underline;"><span
+                                            th:text="${sixtyDaysExpiredPatente.numberPatente}">15</span>人</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <Br>
+        </fieldset>
+
+    </div>
+
+</div>
+<script src="modules/patenteReferCtl.js"></script>
+<script>
+</script>
+</body>
+</html>

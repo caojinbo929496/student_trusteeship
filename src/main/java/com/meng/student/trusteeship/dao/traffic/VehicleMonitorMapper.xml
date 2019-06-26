@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.traffic.VehicleMonitorMapper">
+
+    <select id="listVehicle" parameterType="java.lang.String"
+            resultType="com.meng.student.trusteeship.entity.traffic.po.VehicleMonitorPO">
+        SELECT
+        t.carNumber,
+        t.deductMark,
+        t.penalty,
+        t.unTreated,
+        c.warehouse
+        FROM
+        (SELECT
+        violation.`car_number` AS 'carNumber',
+        SUM(violation.`deduct_mark`) AS 'deductMark',
+        SUM(violation.`penalty`) AS 'penalty',
+        SUM(
+        CASE
+        WHEN violation.`status` = '0'
+        THEN 1
+        ELSE 0
+        END
+        ) AS 'unTreated'
+        FROM
+        violation
+        WHERE violation.`status`='0'
+        GROUP BY violation.`car_number`) t,
+        car c
+        WHERE c.`annual_inspection_status`='当前年检' and t.carNumber = c.`car_number` AND c.`city` like
+        CONCAT('%',#{city},'%') ;
+    </select>
+
+
+    <select id="listDriver" parameterType="java.lang.String"
+            resultType="com.meng.student.trusteeship.entity.traffic.po.DriverMonitorPO">
+        SELECT
+        t.name ,
+        t.warehouse,
+        t.unTreated,
+        t.deductMark,
+        t.penalty
+        FROM
+        (SELECT
+        violation.`offender` AS 'name',
+        ANY_VALUE (car.warehouse) AS 'warehouse',
+        SUM(
+        CASE
+        WHEN violation.`status` = '0'
+        THEN 1
+        ELSE 0
+        END
+        ) AS 'unTreated',
+        SUM(violation.`deduct_mark`) AS 'deductMark',
+        SUM(violation.`penalty`) AS 'penalty'
+        FROM
+        violation,
+        car
+        WHERE car.`annual_inspection_status`='当前年检' and car.`city` like CONCAT('%',#{city},'%') AND
+        violation.`status`='0'
+        AND violation.`car_number` = car.`car_number`
+        GROUP BY violation.`offender`) t;
+
+    </select>
+
+
+    <select id="listOilWearMonitor" parameterType="map"
+            resultType="com.meng.student.trusteeship.entity.traffic.OilWearMonitor">
+        SELECT
+        t1.`uuid` refuelingId,
+        t1.`current_mileage` mileage,
+        t1.`trading_money` free,
+        t1.`trading_time` DATE,
+        t3.`id` carId,
+        t3.`car_number` carNumber,
+        t3.`warehouse` warehouse
+        FROM
+        (SELECT
+        *
+        FROM
+        refueling_record
+        WHERE trading_time &lt; #{endTime}
+        AND trading_time &gt; #{startTime}
+        OR UUID=
+        (SELECT
+        t4.uuid
+        FROM
+        refueling_record t4
+        WHERE t4.`trading_time` &lt;= #{endTime} AND t4.`trading_type`=0 AND t4.trading_type =0
+        ORDER BY t4.`trading_time` DESC
+        LIMIT 0, 1)) t1
+        LEFT JOIN fuel_card t2
+        ON t1.fuel_card_uuid = t2.`uuid`
+        LEFT JOIN car t3
+        ON t2.`bundle_plate_number` = t3.`car_number`
+        AND t3.`city` like CONCAT('%',#{city},'%')
+        ORDER BY t1.`trading_time` DESC;
+    </select>
+
+</mapper>

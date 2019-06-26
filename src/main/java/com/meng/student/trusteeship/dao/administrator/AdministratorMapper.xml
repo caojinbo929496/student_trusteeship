@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.administrator.AdministratorMapper">
+    <resultMap id="BaseResultMap" type="com.meng.student.trusteeship.entity.administrator.po.AdministratorPO">
+        <id column="uuid" property="uuid" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="getAdministrator" resultType="com.meng.student.trusteeship.entity.administrator.po.AdministratorPO">
+        select uuid,name,password from administrator where name=#{name} and password=#{password}
+    </select>
+    <select id="getAdministratorById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from administrator where uuid = #{id}
+    </select>
+    <select id="addAdministrator" parameterType="com.meng.student.trusteeship.entity.administrator.po.AdministratorPO">
+        INSERT INTO administrator (uuid, name, password)
+        VALUES (#{uuid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR})
+    </select>
+</mapper>

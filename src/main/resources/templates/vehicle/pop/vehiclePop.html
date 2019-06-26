@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<!--弹出层-->
+<div id="add-vehicle-info" style="display: none;">
+    <form style="margin-right: 100px; margin-top: 10px" class="layui-form" action="">
+
+        <div class="layui-row">
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">开始时间:</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="registrationTime">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">结束时间:</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="validityDate">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">保险费用:</label>
+                        <div class="layui-input-block">
+                            <input type="number" ng-model="commit.insuranceFee" required lay-verify="required"
+                                   price-format number-max="99999999.99" number-min="0.01" onmousewheel="return false;"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">返现金额:</label>
+                        <div class="layui-input-block">
+                            <input type="number" ng-model="commit.cashBackAmount" price-format number-max="99999999.99"
+                                   number-min="0.01" onmousewheel="return false;"
+                                   class="layui-input">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">车辆价格:</label>
+                        <div class="layui-input-block">
+                            <input type="number" ng-model="commit.vehiclePrice" required lay-verify="required"
+                                   price-format number-max="99999999.99" number-min="0.01" onmousewheel="return false;"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-row">
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">保单上传:</label>
+                        <div class="layui-input-block">
+                            <div class="layui-upload">
+                                <button type="button" class="layui-btn" id="insurance">选择图片</button>
+                                <div style="margin-top: 10px; width:700px;">
+                                    <div class="layui-upload-list" id="ImgPreview"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

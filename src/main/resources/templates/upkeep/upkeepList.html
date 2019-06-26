@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<body ng-app="scriptApp" ng-controller="upkeepReferCtl">
+
+<div class="layui-layout layui-layout-admin">
+
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body layui-main" id="scrollBody">
+
+        <div class="x-nav">
+            <div class="tips-header">
+                <a href="#">
+                    <h2>保养记录</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a href="#">车辆管理</a><span lay-separator="">/</span>
+                              <a><cite>保养记录</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <div style="margin:auto 10%;">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">城市：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" name="number" ng-model="queryCondition.cityName"
+                                       class="layui-input" id="cityName" ng-keyup="getCity()">
+                                <dl class="layui-anim layui-anim-upbit" style="display:block;" ng-if="showCitySelect">
+                                    <dd style="" ng-click="selectCityValue(item)" ng-repeat="item in cityList">
+                                        {{item}}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">仓库：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" name="number" id="repository" ng-model="queryCondition.repository"
+                                       class="layui-input" ng-keyup="getRepository()">
+                                <dl class="layui-anim layui-anim-upbit" style="display:block;"
+                                    ng-if="showRepositorysSelect">
+                                    <dd style="" ng-click="selectRepositorysValue(item)"
+                                        ng-repeat="item in repositoryList">{{item}}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">保养时间：</label>
+                            <div class="layui-input-block">
+                                <div class="layui-input-inline" id="date-time-side">
+                                    <input type="text" name="date" id="upkeepDateStart"
+                                           ng-model="queryCondition.startDate" lay-verify="date"
+                                           autocomplete="off" class="layui-input"/>
+                                </div>
+                                <div class="date-time-center">
+                                    -
+                                </div>
+                                <div class="layui-input-inline" id="date-time-side">
+                                    <input type="text" name="date" id="upkeepDateEnd" ng-model="queryCondition.endDate"
+                                           lay-verify="date"
+                                           autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">送保人：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" name="number" id="upkeepPatente"
+                                       ng-model="queryCondition.patenteName" lay-verify="required|number"
+                                       autocomplete="off"
+                                       ng-keyup="getUpkeepPatente()" class="layui-input">
+                                <dl class="layui-anim layui-anim-upbit" style="display:block;"
+                                    ng-if="showUpkeepPatenteSelect">
+                                    <dd style="" ng-click="selectUpkeepPatenteValue(item)"
+                                        ng-repeat="item in patenteNameList">{{item}}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">车牌号：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" name="number" id="carNumber" ng-model="queryCondition.carNumber"
+                                       lay-verify="required|number" autocomplete="off"
+                                       ng-keyup="getCarNumber()" class="layui-input">
+                                <dl class="layui-anim layui-anim-upbit" style="display:block;"
+                                    ng-if="showCarNumberSelects">
+                                    <dd style="" ng-click="selectCarNumberValue(item)"
+                                        ng-repeat="item in carNumberList">{{item}}
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-btn-group" style="margin-left: 40%; margin-top:2%;">
+                    <button class="layui-btn" ng-click="queryKeywords()">查询</button>
+                    <button class="layui-btn " ng-click="reset()">清空</button>
+                </div>
+            </div>
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                <legend>保养记录列表</legend>
+                <table class="layui-table" lay-even="" lay-skin="row">
+                    <colgroup>
+                        <col width="100">
+                        <col width="150">
+                        <col width="150">
+                        <col width="200">
+                        <col width="200">
+                        <col width="200">
+                        <col width="200">
+                        <col>
+                        <col width="100">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>车牌号码</th>
+                        <th>城市</th>
+                        <th>所属仓库</th>
+                        <th>申请时间</th>
+                        <th>保养时间</th>
+                        <th>送保人</th>
+                        <th>保养内容</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="temp in upkeepListTemp">
+                        <td ng-bind="($index + 1)+((paginationUpkeepConf.currentPage-1)*paginationUpkeepConf.itemsPerPage)"></td>
+                        <td ng-bind="temp.carNumber">粤B8888</td>
+                        <td ng-bind="temp.city">城市</td>
+                        <td ng-bind="temp.warehouse">武昌</td>
+                        <td ng-bind="temp.berichten | date:'yyyy-MM-dd'">2014-09-1</td>
+                        <td ng-bind="temp.date | date:'yyyy-MM-dd'">2014-09-5</td>
+                        <td ng-bind="temp.patenteName">小花</td>
+                        <td ng-bind="temp.info">
+                            换了个发动机，换了个车架
+                        </td>
+                        <td>
+                            <a class="layui-btn layui-btn-primary layui-btn-xs"
+                               href="/upkeep/{{temp.uuid}}"><i
+                                    class="layui-icon" title="详情">详情</i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="page-right" style="padding-right: 5%;">
+                    <tm-pagination conf="paginationUpkeepConf"></tm-pagination>
+                </div>
+            </fieldset>
+        </fieldset>
+    </div>
+</div>
+<script src="modules/upkeepReferCtl.js"></script>
+<script>
+    var start, end;
+
+    //月份修正
+    function doneTime(date) {
+        return {
+            year: date.year,
+            month: date.month - 1,
+            date: date.date
+        }
+    };
+    var start = laydate.render({
+        elem: '#upkeepDateStart', //指定元素
+        done: function (value, date) {
+            //将结束日的初始值设定为开始日
+            end.config.min = doneTime(date);
+            end.config.value = doneTime(date);
+        }
+    });
+    var end = laydate.render({
+        elem: '#upkeepDateEnd', //指定元素
+        done: function (value, date) {
+            //结束日选好后，重置开始日的最大日期
+            start.config.max = doneTime(date);
+        }
+    });
+</script>
+</body>
+</html>

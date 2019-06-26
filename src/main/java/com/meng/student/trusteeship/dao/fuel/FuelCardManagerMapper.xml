@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.fuel.FuelCardManagerMapper">
+    <select id="getFuelCardWithMultipleParams"
+            parameterType="com.meng.student.trusteeship.entity.fuel.GetFuelCardParams"
+            resultType="com.meng.student.trusteeship.entity.fuel.FuelCard">
+        select
+        f.`uuid`,
+        f.bundle_plate_number bundlePlateNumber,
+        f.card_type cardType,
+        f.master_card_number masterCardNumber,
+        f.vice_card_number viceCardNumber,
+        f.adding_time addingTime,
+        f.balance balance,
+        f.card_merchant cardMerchant,
+        f.last_recharge_time lastRechargeTime,
+        c.city,
+        f.password
+        from
+        fuel_card f left join car c on f.bundle_plate_number=c.`car_number` and c.annual_inspection_status='当前年检'
+        <where>
+            <if test="null!=city and ''!=city">
+                c.city like concat('%',#{city},'%')
+            </if>
+            <if test="null!=masterCardNumber and ''!=masterCardNumber">
+                and f.master_card_number like concat('%',#{masterCardNumber},'%')
+            </if>
+            <if test="null!=viceCardNumber and ''!=viceCardNumber">
+                and f.vice_card_number like concat('%',#{viceCardNumber},'%')
+            </if>
+            <if test="null!=cardMerchant and 'all'!=cardMerchant">
+                and f.card_merchant like concat('%',#{cardMerchant},'%')
+            </if>
+            <if test="null!=bundlePlateNumber and ''!=bundlePlateNumber">
+                and f.bundle_plate_number like concat('%',#{bundlePlateNumber},'%')
+            </if>
+            <if test="ifBundle=='yes'">
+                and f.bundle_plate_number is not null
+            </if>
+            <if test="ifBundle=='no'">
+                and f.bundle_plate_number is null
+            </if>
+        </where>
+        order by f.adding_time DESC
+        <if test="start!=null and length!=null">
+            limit #{start},#{length}
+        </if>
+
+    </select>
+    <select id="getFuelCardNumbersWithMultipleParams"
+            parameterType="com.meng.student.trusteeship.entity.fuel.GetFuelCardParams"
+            resultType="Integer">
+        select count(f.uuid)
+        from
+        fuel_card f left join car c on f.bundle_plate_number=c.`car_number` and c.annual_inspection_status='当前年检'
+        <where>
+            <if test="null!=city and ''!=city">
+                c.city like concat('%',#{city},'%')
+            </if>
+            <if test="null!=masterCardNumber and ''!=masterCardNumber">
+                and f.master_card_number like concat('%',#{masterCardNumber},'%')
+            </if>
+            <if test="null!=viceCardNumber and ''!=viceCardNumber">
+                and f.vice_card_number like concat('%',#{viceCardNumber},'%')
+            </if>
+            <if test="null!=cardMerchant and 'all'!=cardMerchant">
+                and f.card_merchant like concat('%',#{cardMerchant},'%')
+            </if>
+            <if test="null!=bundlePlateNumber and ''!=bundlePlateNumber">
+                and f.bundle_plate_number like concat('%',#{bundlePlateNumber},'%')
+            </if>
+            <if test="ifBundle=='yes'">
+                and f.bundle_plate_number is not null
+            </if>
+            <if test="ifBundle=='no'">
+                and f.bundle_plate_number is null
+            </if>
+        </where>
+    </select>
+    <update id="bindCarForCard">
+        update `fuel_card`
+        set bundle_plate_number=#{carNumber}
+        where
+        master_card_number=#{masterCardNumber} and
+
+        vice_card_number=#{viceCardNumber} and
+
+        card_merchant=#{cardMerchant}
+
+
+    </update>
+    <insert id="insertACard"
+            parameterType="com.meng.student.trusteeship.entity.fuel.po.FuelCardPO">
+        insert into `fuel_card`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `uuid`,
+            master_card_number,
+            <if test="viceCardNumber != null">
+                vice_card_number,
+            </if>
+            card_merchant,
+            <if test="balance != null">
+                balance,
+            </if>
+
+            adding_time,
+            <if test="bundlePlateNumber != null">
+                bundle_plate_number,
+            </if>
+            <if test="lastRechargeTime != null">
+                last_recharge_time,
+            </if>
+            password,
+            card_type
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{uuid,jdbcType=VARCHAR},
+            #{masterCardNumber,jdbcType=VARCHAR},
+            <if test="viceCardNumber != null">
+                #{viceCardNumber,jdbcType=VARCHAR},
+            </if>
+            #{cardMerchant,jdbcType=INTEGER},
+            <if test="balance != null">
+                #{balance,jdbcType=DECIMAL},
+            </if>
+
+            #{addingTime,jdbcType=TIMESTAMP},
+            <if test="bundlePlateNumber != null">
+                #{bundlePlateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="lastRechargeTime != null">
+                #{lastRechargeTime,jdbcType=DATE},
+            </if>
+            #{password,jdbcType=VARCHAR},
+            #{cardType,jdbcType=INTEGER}
+        </trim>
+    </insert>
+    <update id="updateFuelCard"
+            parameterType="com.meng.student.trusteeship.entity.fuel.po.FuelCardPO">
+        update `fuel_card` set
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="balance != null and balance != ''">
+                balance=#{balance,jdbcType=DECIMAL},
+            </if>
+
+            <if test="bundlePlateNumber != null and bundlePlateNumber !=''">
+                bundle_plate_number=#{bundlePlateNumber,jdbcType=VARCHAR},
+            </if>
+
+            <if test="lastRechargeTime != null">
+                last_recharge_time=#{lastRechargeTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="password!=null and password!=''">
+                password=#{password,jdbcType=VARCHAR}
+            </if>
+        </trim>
+        WHERE master_card_number=#{masterCardNumber}
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="viceCardNumber != null and viceCardNumber != ''">
+                and vice_card_number= #{viceCardNumber,jdbcType=VARCHAR}
+            </if>
+            and card_merchant=#{cardMerchant}
+        </trim>
+    </update>
+    <select id="getFuelCardUuid" resultType="String">
+        select `uuid` from
+        `fuel_card` where
+        master_card_number=#{masterCardNumber} and
+        vice_card_number=#{viceCardNumber} and card_merchant=#{cardMerchant}
+    </select>
+    <select id="listCarNumberNotBundled" parameterType="String" resultType="String">
+        select DISTINCT car_number from car
+        where car_number like concat('%',#{carNumber},'%')
+    </select>
+
+    <select id="countCarNumberNotBundled" parameterType="String" resultType="Integer">
+        select count(1) from car c left join fuel_card f on c.car_number=f.bundle_plate_number
+        where f.bundle_plate_number is null and c.car_number = #{carNumber}
+    </select>
+    <update id="updateBundlePlateNumber">
+        update fuel_card set bundle_plate_number=#{bundlePlateNumber} where uuid=#{uuid}
+    </update>
+    <select id="getUuidByBundlePlateNumber" resultType="String">
+        select uuid from fuel_card where bundle_plate_number=#{bundlePlateNumber} order by adding_time desc limit 0,1
+    </select>
+    <select id="countCarNumber" parameterType="String" resultType="Integer">
+        select count(1) from car where car_number=#{carNumber}
+    </select>
+    <update id="updateAFuelCard" parameterType="com.meng.student.trusteeship.entity.fuel.po.UpdateFuelCardParams">
+        update fuel_card
+        <trim prefix="set" suffixOverrides=",">
+            master_card_number=#{masterCardNumber},
+            vice_card_number=#{viceCardNumber},
+            card_Merchant=#{cardMerchant},
+            password=#{password},card_type=#{cardType}
+        </trim>
+        where `uuid`=#{uuid}
+    </update>
+</mapper>

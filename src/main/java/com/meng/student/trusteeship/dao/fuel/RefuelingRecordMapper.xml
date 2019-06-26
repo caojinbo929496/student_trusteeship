@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.fuel.RefuelingRecordMapper">
+
+    <insert id="saveARefuelingRecord"
+            parameterType="com.meng.student.trusteeship.entity.fuel.po.RefuelingRecordPO">
+        insert into `refueling_record`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            `uuid`,
+            master_card_number,
+            <if test="viceCardNumber != null and viceCardNumber !=''">
+                vice_card_number,
+            </if>
+            trading_time,
+            trading_type,
+            trading_money,
+            <if test="oilType != null">
+                oil_type ,
+            </if>
+            <if test="oilQuantity != null">
+                oil_quantity,
+            </if>
+
+            <if test="oilPrice != null">
+                oil_price,
+            </if>
+            <if test="balance != null">
+                balance,
+            </if>
+            <if test="tradingPosition != null and tradingPosition != ''">
+                trading_position,
+            </if>
+            <if test="currentMileage != null">
+                current_mileage,
+            </if>
+            fuel_card_uuid
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{uuid,jdbcType=VARCHAR},
+            #{masterCardNumber,jdbcType=VARCHAR},
+            <if test="viceCardNumber != null and viceCardNumber!=''">
+                #{viceCardNumber,jdbcType=VARCHAR},
+            </if>
+            #{tradingTime,jdbcType=TIMESTAMP},
+            #{tradingType,jdbcType=INTEGER},
+            #{tradingMoney,jdbcType=DECIMAL},
+            <if test="oilType != null">
+                #{oilType ,jdbcType=VARCHAR},
+            </if>
+            <if test="oilQuantity != null">
+                #{oilQuantity,jdbcType=DECIMAL},
+            </if>
+
+            <if test="oilPrice != null">
+                #{oilPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="balance != null">
+                #{balance,jdbcType=DECIMAL },
+            </if>
+            <if test="tradingPosition != null and tradingPosition != ''">
+                #{tradingPosition,jdbcType=VARCHAR },
+            </if>
+            <if test="currentMileage != null">
+                #{currentMileage,jdbcType=DECIMAL },
+            </if>
+            #{fuelCardUuid,jdbcType=VARCHAR}
+        </trim>
+    </insert>
+    <select id="getARefuelingRecordByBundlePlateNumber"
+            parameterType="String"
+            resultType="com.meng.student.trusteeship.entity.fuel.RefuelingRecord">
+        SELECT
+        fr.trading_money tradingMoney,
+        ri.trading_time tradingTime,
+        ri.current_mileage currentMileage
+        FROM
+        refueling_image_record ri
+        LEFT JOIN
+        (SELECT
+        f.`bundle_plate_number`,
+        r.`trading_money`,
+        r.`trading_time`
+        FROM
+        fuel_card f,
+        refueling_record r
+        WHERE f.`uuid` = r.`fuel_card_uuid`
+        AND r.`trading_type` = 0) fr
+        ON 6000 >= ri.trading_time - fr.trading_time
+        AND ri.`car_number` = fr.bundle_plate_number
+        where ri.car_number=#{bundlePlateNumber} ORDER BY tradingTime DESC LIMIT 0,1
+    </select>
+    <insert id="saveAndroidRefuelingRecord"
+            parameterType="com.meng.student.trusteeship.entity.fuel.po.AndroidRefuelingRecordPO">
+        insert into `refueling_image_record` values
+        (#{uuid},#{tradingTime},#{imagePath},#{carNumber},#{currentMileage},#{patenteNumber})
+    </insert>
+    <select id="getRefuelingRecordCountByBundlePlateNumber" parameterType="String"
+            resultType="com.meng.student.trusteeship.entity.fuel.RefuelingRecordCount">
+        SELECT
+        (
+        (SELECT
+        r.current_mileage
+        FROM
+        refueling_record r,
+        fuel_card f
+        WHERE r.fuel_card_uuid = f.uuid
+        AND r.trading_type = 0
+        AND f.bundle_plate_number =#{bundlePlateNumber}
+        ORDER BY trading_time DESC
+        LIMIT 0, 1) -
+        (SELECT
+        r.current_mileage
+        FROM
+        refueling_record r,
+        fuel_card f
+        WHERE r.fuel_card_uuid = f.uuid
+        AND r.trading_type = 0
+        AND f.bundle_plate_number = #{bundlePlateNumber}
+        ORDER BY trading_time
+        LIMIT 0, 1)
+        ) totalMileage,
+        SUM(or.trading_money) totalRefuelingMoney,
+        COUNT(or.trading_money) refuelingTimes
+        FROM
+        refueling_record
+        `or`,
+        fuel_card `of`
+        WHERE `or`.`fuel_card_uuid` = `of`.`uuid`
+        AND `or`.`trading_type` = 0
+        AND `of`.`bundle_plate_number` =#{bundlePlateNumber};
+    </select>
+    <select id="getRefuelingRecordForFormsListByBundlePlateNumber" parameterType="String"
+            resultType="com.meng.student.trusteeship.entity.fuel.RefuelingRecordForForms">
+        SELECT distinct
+        ri.trading_time tradingTime,
+        fr.master_card_number masterCardNumber,
+        fr.vice_card_number viceCardNumber,
+        fr.card_merchant cardMerchant,
+        ri.current_mileage currentMileage,
+        fr.trading_money tradingMoney,
+        cvp.driver_id driverId,
+        fr.trading_position tradingPosition,
+        ri.image_path mileageImgUrl,
+        cvp.name driverName,
+        cvp.number patenteNumber
+        FROM
+        refueling_image_record ri
+        LEFT JOIN
+        (SELECT f.`bundle_plate_number`,
+        r.`trading_money`,
+        r.`trading_time`,r.
+        `trading_position`,
+        f.uuid,
+        f.master_card_number,
+        f.vice_card_number,
+        f.card_merchant
+        FROM
+        fuel_card f,refueling_record r WHERE f.`uuid`=r.`fuel_card_uuid` and r.`trading_type`=0) fr
+        ON 6000 >= ri.trading_time - fr.trading_time and ri.`car_number`=fr.bundle_plate_number
+        LEFT JOIN (select
+        c.`car_number`,c.`warehouse`,c.`city`,c.`brand_model_number`,c.`vehicle_type`,p.name,p.`number`,v.driver_id from
+        car c left
+        join vehicle_driving_time_information v on c.`car_number`=v.car_number left join patente p on
+        v.driver_id=p.`uuid`) cvp on
+        ri.`car_number`=cvp.car_number
+        WHERE ri.car_number = #{bundlePlateNumber}
+        ORDER BY tradingTime desc,currentMileage desc
+    </select>
+    <select id="getRefuelingRecordForRefuelingRecordPage"
+            parameterType="com.meng.student.trusteeship.entity.fuel.GetRefuelRecordsParams"
+            resultType="com.meng.student.trusteeship.entity.fuel.RefuelingRecordForRefuelingRecordPage">
+        SELECT
+        cvp.city city,
+        cvp.car_number carNumber,
+        cvp.brand_model_number carBrand,
+        cvp.vehicle_type vehicleType,
+        ri.`patente_number` refuelingDriverNumber,
+        op.name refuelingDriverName,
+        ri.current_mileage currentMileage,
+        ri.trading_time refuelingTime,
+        fr.trading_money refuelingMoney,
+        fr.trading_position tradingPosition,
+        ri.image_path imgUrl,
+        ri.trading_time falseRefuelingTime
+        FROM
+        refueling_image_record ri
+        LEFT JOIN (SELECT f.`bundle_plate_number`,r.`trading_money`,r.`trading_time`,r.`trading_position`,f.uuid FROM
+        fuel_card f,refueling_record r WHERE f.`uuid`=r.`fuel_card_uuid` and r.`trading_type`=0) fr
+        ON YEAR(ri.`trading_time`)=YEAR(fr.trading_time) AND MONTH(ri.`trading_time`)=MONTH(fr.trading_time) AND
+        DAY(ri.`trading_time`)=DAY(fr.trading_time) AND
+        6000 >= ri.trading_time - fr.trading_time and ri.`car_number`=fr.bundle_plate_number
+        LEFT JOIN (select
+        c.`car_number`,c.`warehouse`,c.`city`,c.`brand_model_number`,c.`vehicle_type`,p.name,p.`number` from car c left
+        join vehicle_driving_time_information v on c.`car_number`=v.car_number AND NOW()>=v.`start_time` AND
+        v.`stop_time`>=NOW() left join patente p on
+        v.driver_id=p.`uuid` WHERE c.annual_inspection_status='当前年检') cvp on
+        ri.`car_number`=cvp.car_number
+        LEFT JOIN patente op ON ri.`patente_number`=op.number
+        <where>
+            1=1
+            <if test="city!=null and city!='' and city!='null'">
+                and cvp.city like concat('%',#{city},'%')
+            </if>
+            <if test="carNumber!=null and carNumber !=''and carNumber!='null'">
+                and cvp.car_number like concat('%',#{carNumber},'%')
+            </if>
+            <if test="driverName!=null and driverName!='' and driverName!='null'">
+                and op.name like concat('%',#{driverName},'%')
+
+            </if>
+            <if test="wareHouse!=null and wareHouse!='' and wareHouse!='null'">
+                and cvp.warehouse like concat('%',#{wareHouse},'%')
+            </if>
+            <if test="startTime!=null">
+                and YEAR (ri.trading_time) >=YEAR (#{startTime,jdbcType=DATE}) and MONTH (ri.trading_time) >=MONTH
+                (#{startTime,jdbcType=DATE})
+                AND DAY (ri.trading_time) >=DAY (#{startTime,jdbcType=DATE})
+            </if>
+            <if test="endTime!=null">
+                and YEAR (#{endTime,jdbcType=DATE}) >= YEAR(ri.trading_time) and MONTH (#{endTime,jdbcType=DATE}) >=
+                MONTH(ri.trading_time) and DAY (#{endTime,jdbcType=DATE}) >= DAY(ri.trading_time)
+            </if>
+        </where>
+        ORDER BY refuelingTime desc,currentMileage desc,imgUrl
+        <if test="startIndex!=null and recordsNumber!=null">
+            limit #{startIndex},#{recordsNumber}
+        </if>
+    </select>
+    <select id="getRefuelingRecordNumberForRefuelingRecordPage"
+            parameterType="com.meng.student.trusteeship.entity.fuel.GetRefuelRecordsParams"
+            resultType="Integer">
+        SELECT
+        count(ri.`uuid`)
+        FROM
+        refueling_image_record ri
+        LEFT JOIN (SELECT f.`bundle_plate_number`,r.`trading_money`,r.`trading_time`,r.`trading_position`,f.uuid FROM
+        fuel_card f,refueling_record r WHERE f.`uuid`=r.`fuel_card_uuid` and r.`trading_type`=0) fr
+        ON YEAR(ri.`trading_time`)=YEAR(fr.trading_time) AND MONTH(ri.`trading_time`)=MONTH(fr.trading_time) AND
+        DAY(ri.`trading_time`)=DAY(fr.trading_time) AND
+        6000 >= ri.trading_time - fr.trading_time and ri.`car_number`=fr.bundle_plate_number
+        LEFT JOIN (select
+        c.`car_number`,c.`warehouse`,c.`city`,c.`brand_model_number`,c.`vehicle_type`,p.name,p.`number` from car c left
+        join vehicle_driving_time_information v on c.`car_number`=v.car_number AND NOW()>=v.`start_time` AND
+        v.`stop_time`>=NOW() left join patente p on
+        v.driver_id=p.`uuid` WHERE c.annual_inspection_status='当前年检') cvp on
+        ri.`car_number`=cvp.car_number
+        LEFT JOIN patente op ON ri.`patente_number`=op.number
+        <where>
+            1=1
+            <if test="city!=null and city!='' and city!='null'">
+                and cvp.city like concat('%',#{city},'%')
+            </if>
+            <if test="carNumber!=null and carNumber !=''and carNumber!='null'">
+                and cvp.car_number like concat('%',#{carNumber},'%')
+            </if>
+            <if test="driverName!=null and driverName!='' and driverName!='null'">
+                and cvp.name like concat('%',#{driverName},'%')
+
+            </if>
+            <if test="wareHouse!=null and wareHouse!='' and wareHouse!='null'">
+                and cvp.warehouse like concat('%',#{wareHouse},'%')
+            </if>
+            <if test="startTime!=null">
+                and YEAR (ri.trading_time) >=YEAR (#{startTime,jdbcType=DATE}) and MONTH (ri.trading_time) >=MONTH
+                (#{startTime,jdbcType=DATE})
+                AND DAY (ri.trading_time) >=DAY (#{startTime,jdbcType=DATE})
+            </if>
+            <if test="endTime!=null">
+                and YEAR (#{endTime,jdbcType=DATE}) >= YEAR(ri.trading_time) and MONTH (#{endTime,jdbcType=DATE}) >=
+                MONTH(ri.trading_time) and DAY (#{endTime,jdbcType=DATE}) >= DAY(ri.trading_time)
+            </if>
+        </where>
+    </select>
+    <select id="getAAndroidRefuelingRecord"
+            resultType="Double">
+        SELECT
+        ri.current_mileage
+        FROM
+        refueling_image_record ri,
+        refueling_record r,fuel_card f
+        WHERE 6000 > ri.trading_time - r.trading_time
+        AND ri.car_number = f.bundle_plate_number
+        AND r.fuel_card_uuid = f.uuid
+        AND f.uuid = #{fuelCardUuid}
+        AND r.trading_time = #{tradingTime}
+    </select>
+    <select id="getRefuelingRecordForAndroidWithCityAndWarehouse"
+            resultType="com.meng.student.trusteeship.entity.fuel.RefuelingRecordForRefuelingRecordPage">
+        SELECT
+        cvp.city city,
+        cvp.car_number carNumber,
+        cvp.brand_model_number carBrand,
+        cvp.vehicle_type vehicleType,
+        ri.`patente_number` refuelingDriverNumber,
+        op.name refuelingDriverName,
+        ri.current_mileage currentMileage,
+        fr.trading_time refuelingTime,
+        fr.trading_money refuelingMoney,
+        fr.trading_position tradingPosition,
+        ri.image_path imgUrl,
+        ri.trading_time falseRefuelingTime
+        FROM
+        refueling_image_record ri
+        LEFT JOIN (SELECT f.`bundle_plate_number`,r.`trading_money`,r.`trading_time`,r.`trading_position`,f.uuid FROM
+        fuel_card f,refueling_record r WHERE f.`uuid`=r.`fuel_card_uuid` and r.`trading_type`=0) fr
+        ON 6000 >= ri.trading_time - fr.trading_time and ri.`car_number`=fr.bundle_plate_number
+        LEFT JOIN (select
+        c.`car_number`,c.`warehouse`,c.`city`,c.`brand_model_number`,c.`vehicle_type`,p.name,p.`number` from car c left
+        join vehicle_driving_time_information v on c.`car_number`=v.car_number left join patente p on
+        v.driver_id=p.`uuid`) cvp on
+        ri.`car_number`=cvp.car_number
+        LEFT JOIN patente op ON ri.`patente_number`=op.number
+        <where>
+            1=1
+            <if test="city!=null and city!='all'">
+                and cvp.city =#{city}
+            </if>
+            <if test="warehouse!=null and warehouse!='all'">
+                and cvp.warehouse = #{warehouse}
+            </if>
+        </where>
+        ORDER BY refuelingTime desc,currentMileage desc,imgUrl
+    </select>
+    <select id="getLastRechargeTime" resultType="java.util.Date">
+        select r.trading_time from refueling_record r,fuel_card f
+        where r.fuel_card_uuid=f.uuid and f.master_card_number=#{masterCardNumber}
+        and f.vice_card_number=#{viceCardNumber} and f.card_merchant=#{cardMerchant}
+        and r.trading_type=0
+        order by r.trading_time desc limit 0,1
+    </select>
+    <select id="getLastMileageByFalseTradingTime" resultType="Double">
+        SELECT current_mileage FROM refueling_image_record WHERE #{falseTradingTime}>trading_time and
+        car_number=#{carNumber} ORDER BY trading_time
+        DESC LIMIT 0,1
+    </select>
+    <select id="getRefuelingRecordForRefuelingRecordPageWithFour"
+            parameterType="com.meng.student.trusteeship.entity.fuel.GetRefuelRecordsParams"
+            resultType="com.meng.student.trusteeship.entity.fuel.RefuelingRecordForRefuelingRecordPage">
+        SELECT
+        cvp.car_number carNumber,
+        cvp.name refuelingDriverName,
+        ri.current_mileage currentMileage,
+        fr.trading_time refuelingTime,
+        fr.trading_money refuelingMoney,
+        fr.trading_position tradingPosition,
+        ri.image_path imgUrl
+        FROM
+        refueling_image_record ri
+        LEFT JOIN (SELECT
+        f.`bundle_plate_number`,r.`trading_money`,r.`trading_time`,r.`trading_position`,f.uuid,
+        f.master_Card_Number,
+        f.vice_Card_Number,f.card_Merchant FROM
+        fuel_card f,refueling_record r WHERE f.`uuid`=r.`fuel_card_uuid` and r.`trading_type`=0) fr
+        ON 6000 >= ri.trading_time - fr.trading_time and ri.`car_number`=fr.bundle_plate_number
+        LEFT JOIN (select
+        c.`car_number`,c.`warehouse`,c.`city`,c.`brand_model_number`,c.`vehicle_type`,p.name,p.`number` from car c left
+        join vehicle_driving_time_information v on c.`car_number`=v.car_number left join patente p on
+        v.driver_id=p.`uuid`) cvp on
+        ri.`car_number`=cvp.car_number
+        <where>
+            1=1
+            <if test="null!=masterCardNumber and ''!=masterCardNumber">
+                and fr.master_card_number=#{masterCardNumber}
+            </if>
+            <if test="null!=viceCardNumber and ''!=viceCardNumber">
+                and fr.vice_card_number =#{viceCardNumber}
+            </if>
+            <if test="null!=cardMerchant and 'all'!=cardMerchant">
+                and fr.card_merchant =#{cardMerchant}
+            </if>
+            <if test="null!=carNumber and ''!=carNumber">
+                and fr.bundle_plate_number =#{carNumber}
+            </if>
+        </where>
+        ORDER BY refuelingTime desc,currentMileage desc,imgUrl
+        <if test="startIndex!=null and recordsNumber!=null">
+            limit #{startIndex},#{recordsNumber}
+        </if>
+    </select>
+
+    <select id="getRefuelingRecordNumberForRefuelingRecordPageWithFour"
+            parameterType="com.meng.student.trusteeship.entity.fuel.GetRefuelRecordsParams"
+            resultType="Integer">
+        SELECT
+        count(1)
+        FROM
+        refueling_image_record ri
+        LEFT JOIN (SELECT
+        f.`bundle_plate_number`,r.`trading_money`,r.`trading_time`,r.`trading_position`,f.uuid,
+        f.master_Card_Number,
+        f.vice_Card_Number,f.card_Merchant FROM
+        fuel_card f,refueling_record r WHERE f.`uuid`=r.`fuel_card_uuid` and r.`trading_type`=0) fr
+        ON 6000 >= ri.trading_time - fr.trading_time and ri.`car_number`=fr.bundle_plate_number
+        LEFT JOIN (select
+        c.`car_number`,c.`warehouse`,c.`city`,c.`brand_model_number`,c.`vehicle_type`,p.name,p.`number` from car c left
+        join vehicle_driving_time_information v on c.`car_number`=v.car_number left join patente p on
+        v.driver_id=p.`uuid`) cvp on
+        ri.`car_number`=cvp.car_number
+        <where>
+            1=1
+            <if test="null!=masterCardNumber and ''!=masterCardNumber">
+                and fr.master_card_number=#{masterCardNumber}
+            </if>
+            <if test="null!=viceCardNumber and ''!=viceCardNumber">
+                and fr.vice_card_number =#{viceCardNumber}
+            </if>
+            <if test="null!=cardMerchant and 'all'!=cardMerchant">
+                and fr.card_merchant =#{cardMerchant}
+            </if>
+            <if test="null!=carNumber and ''!=carNumber">
+                and fr.bundle_plate_number =#{carNumber}
+            </if>
+        </where>
+    </select>
+    <select id="countRefuelingRecord" resultType="String">
+        select f.uuid from refueling_record r,fuel_card f
+        where
+        r.fuel_card_uuid=f.uuid and
+        r.master_card_number=#{masterCardNumber}
+        <if test="viceCardNumber!=null and viceCardNumber!=''">
+            and r.vice_card_number=#{viceCardNumber}
+        </if>
+        and r.trading_time=#{tradingTime}
+        and f.card_merchant=#{cardMerchant}
+    </select>
+    <select id="getCurrentMileageFromImageRecord" resultType="Double">
+        SELECT ri.current_mileage
+        FROM refueling_image_record ri,fuel_card f
+        WHERE f.`bundle_plate_number`=ri.`car_number`
+        and f.uuid=#{fuelCardUuid}
+        AND YEAR(#{tradingTime})=YEAR(ri.`trading_time`)
+        AND MONTH(#{tradingTime})=MONTH(ri.`trading_time`)
+        AND TIME_TO_SEC(ri.`trading_time`)-TIME_TO_SEC(#{tradingTime}) &lt; 3600
+        AND TIME_TO_SEC(ri.`trading_time`)-TIME_TO_SEC(#{tradingTime})>=0
+        order by ri.current_mileage desc limit 0,1
+    </select>
+</mapper>

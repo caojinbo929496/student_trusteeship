@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head"></head>
+<body>
+<!--/*@thymesVar id="scriptList" type="java.lang.List"*/-->
+<!--/*@thymesVar id="script" type="com.yijiupi.entity.Script"*/-->
+
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body">
+        <div class="layui-row" id="first">
+            <div class="layui-col-md3">
+                <h3>首页- 加油记录</h3>
+            </div>
+            <div class="layui-col-md9">
+                <img src="/images/fuelManager/shuaxintubiao.png">
+            </div>
+        </div>
+        <div class="layui-row" id="second">
+            <div id="second-first">
+                <div id="second-first-left">
+                    <div id="second-first-left-city"><span>城市</span><select>
+                        <option value="0">请选择</option>
+                    </select>
+                        <select>
+                            <option value="0">请选择</option>
+                        </select>
+                    </div>
+                    <div id="second-first-left-driver"><span>城市</span><input type="text"></div>
+                    <div id="second-first-left-storehouse"><span>城市</span><select>
+                        <option value="0">请选择</option>
+                    </select>
+                    </div>
+                </div>
+                <div id="second-first-right">
+                    <div id="second-first-right-plate"><span>车牌号码</span><input type="text"></div>
+                    <div id="second-first-right-fuelingTime"><span>加油时间</span><input type="text">————<input type="text">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div id="second-second">
+
+        </div>
+    </div>
+    <div class="layui-row" id="third"></div>
+</div>
+
+
+</div>
+
+</body>
+
+</html>

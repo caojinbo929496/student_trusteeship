@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<style type="text/css">
+    .jqzoom {
+        cursor: pointer;
+    }
+</style>
+<body ng-app="scriptApp" ng-controller="vehicleDetailsCtrl">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <input type="hidden" id="carNumber" th:value="${carNumber}"/>
+    <input type="hidden" th:value="${session.administrator.uuid}" id="userId"/>
+    <div class="layui-body layui-main">
+
+        <div class="x-nav">
+            <div class="tips-header" style="">
+                <a href="#">
+                    <h2>车辆详情</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a href="#">车辆管理</a><span lay-separator="">/</span>
+                              <a href="/vehicle/vehicleQuery/0">车辆查询</a><span lay-separator="">/</span>
+                              <a><cite>车辆详情</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>车辆基本信息
+                    <button class="layui-btn layui-btn-primary layui-btn-small"
+                            data-ng-click="addInsurance()">
+                        <i class="layui-icon" title="投保">投保</i></button>
+                    <button class="layui-btn layui-btn-primary layui-btn-small"
+                            data-ng-click="modifyInsurance()">
+                        <i class="layui-icon" title="查看">修改当前保险</i></button>
+                </legend>
+                <table class="layui-table" lay-even="" lay-skin="row">
+                    <colgroup>
+                        <col width="300">
+                        <col width="300">
+                        <col width="300">
+                        <col width="300">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>车牌号码</th>
+                        <th ng-bind="data.car.carNumber"></th>
+                        <td>车辆分类</td>
+                        <td ng-bind="data.car.vehicleType"></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>车辆品牌</td>
+                        <td ng-bind="data.car.brandModelNumber"></td>
+                        <td>保险到期时间</td>
+                        <td ng-bind="data.freashInsurance.stopDate | date:'yyyy/MM/dd'"></td>
+                    </tr>
+                    <tr>
+                        <td>车辆所属仓库</td>
+                        <td ng-bind="data.car.warehouse"></td>
+                        <td>车辆购买价格(元)</td>
+                        <td ng-bind="data.car.vehiclePrice"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+                <legend>行驶证信息</legend>
+                <table class="layui-table" lay-even="" lay-skin="row">
+
+                    <colgroup>
+                        <col width="300">
+                        <col width="300">
+                        <col width="300">
+                        <col width="300">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>所有人</th>
+                        <th ng-bind="data.car.owners"></th>
+                        <th>车牌号码</th>
+                        <th ng-bind="data.car.carNumber"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>品牌型号</td>
+                        <td ng-bind="data.car.brandModelNumber"></td>
+                        <td>车辆类型</td>
+                        <td ng-bind="data.car.vehicleType"></td>
+                    </tr>
+                    <tr>
+                        <td>发动机号</td>
+                        <td ng-bind="data.car.engineNumber"></td>
+                        <td>车辆识别代号</td>
+                        <td ng-bind="data.car.frameNumber"></td>
+                    </tr>
+                    <tr>
+                        <td>注册日期</td>
+                        <td ng-bind="data.car.registrationTime | date:'yyyy/MM/dd'"></td>
+                        <td>年检有效期至</td>
+                        <td ng-bind="data.car.validityDate | date:'yyyy/MM'+'月底'"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+                <legend>车辆行驶情况</legend>
+                <table class="layui-table" lay-even="" lay-skin="row">
+
+                    <colgroup>
+                        <col width="300">
+                        <col width="300">
+                        <col width="300">
+                        <col width="300">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>总行驶里程</th>
+                        <th ng-bind="data.refuelingRecordCount.totalMileage == null ? '未录入':data.refuelingRecordCount.totalMileage+'KM'"></th>
+                        <th>未处理违法记录</th>
+                        <th ng-bind="data.violationCountInfo.unhandledIllegalRecords == null ?'0条':data.violationCountInfo.unhandledIllegalRecords+'条'"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>总加油金额（元）</td>
+                        <td ng-bind="data.refuelingRecordCount.totalRefuelingMoney == null ? '0元':data.refuelingRecordCount.totalRefuelingMoney+'元'"></td>
+                        <td>总记分</td>
+                        <td ng-bind="data.violationCountInfo.totalDeductMark == null ? '0分':data.violationCountInfo.totalDeductMark+'分'"></td>
+                    </tr>
+                    <tr>
+                        <td>加油次数</td>
+                        <td ng-bind="data.refuelingRecordCount.refuelingTimes == null? '0次':data.refuelingRecordCount.refuelingTimes+'次'"></td>
+                        <td>总罚款金额（元）</td>
+                        <td ng-bind="data.violationCountInfo.totalFine == null ? '0元':data.violationCountInfo.totalFine+'元'"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
+                <legend>车辆记录状况</legend>
+
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">加油记录</li>
+                        <li>未处理违章记录</li>
+                        <li>保险记录</li>
+                        <li>保养记录</li>
+                        <li>维修记录</li>
+                        <li>年检更新记录</li>
+                    </ul>
+                    <div class="layui-tab-content" style="height: 100%;">
+                        <div class="layui-tab-item layui-show">
+                            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                                <table class="layui-table custom-table">
+                                    <thead>
+                                    <tr>
+                                        <th class="layui-icon" width="10%">&#xe62d;</th>
+                                        <th width="15%">加油时间</th>
+                                        <th width="15%">加油卡号</th>
+                                        <th width="15%">录入里程数（KM）</th>
+                                        <th width="10%">加油金额（元）</th>
+                                        <th width="10%">加油司机</th>
+                                        <th width="10%">定位地址</th>
+                                        <th class="layui-icon" width="15%">里程数照片</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="(index,refuelingRecord) in data.refuelingRecordForFormsTemp"
+                                        ng-if="index < 10 || flag1">
+                                        <td ng-bind="$index + 1"><a></a></td>
+                                        <td ng-bind="refuelingRecord.tradingTime | date:'yyyy/MM/dd'"></td>
+                                        <td ng-bind="refuelingRecord.viceCardNumber"></td>
+                                        <td ng-bind="refuelingRecord.currentMileage"></td>
+                                        <td ng-bind="refuelingRecord.tradingMoney"></td>
+                                        <td ng-bind="refuelingRecord.driverName"></td>
+                                        <td ng-bind="refuelingRecord.tradingPosition"></td>
+                                        <td>
+                                            <img class="jqzoom" onclick="viewPicture(this)"
+                                                 ng-src="{{refuelingRecord.mileageImgUrl}}">
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div id="demo20" style="float: right"></div>
+
+                            </fieldset>
+                            <div id="vehicleDetails" style="margin-left: 30%;"></div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <ul class="layui-timeline">
+                                <li class="layui-timeline-item"
+                                    ng-repeat="violation in data.violations | orderBy:'-violationTime'">
+                                    <i class="layui-icon layui-timeline-axis"></i>
+                                    <div class="layui-timeline-content layui-text">
+                                        <h3 class="layui-timeline-title">8月18日</h3>
+                                        <p>
+                                            <span style="font-size: 25px; color: #141f49;"> {{violation.violationInformation}}&nbsp;</span>
+                                            <br>违章时间:{{violation.violationTime | date:'yyyy/MM/dd'}}
+                                            <br>违章地点：{{violation.violationPlace}}
+                                            <br>处罚单位：{{violation.processingUnit}}
+                                            <br>罚款金额：{{violation.penalty}}
+                                            <br>扣分：{{violation.deductMark}}
+                                            <br>违章人：{{violation.offender}}
+                                        </p>
+                                    </div>
+                                </li>
+                                <li class="layui-timeline-item">
+                                    <i class="layui-icon layui-timeline-axis"></i>
+                                    <div class="layui-timeline-content layui-text">
+                                        <div class="layui-timeline-title">本页尽头</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="layui-tab-item">
+                            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                                <table class="layui-table custom-table">
+                                    <thead>
+                                    <tr>
+                                        <th class="layui-icon" width="10%">&#xe62d;</th>
+                                        <th width="15%">保险开始时间</th>
+                                        <th width="15%">保险结束时间</th>
+                                        <th width="15%">保险费用(元)</th>
+                                        <th width="10%">返现金额(元)</th>
+                                        <th width="10%">操作人</th>
+                                        <th class="layui-icon" width="15%">保单照片</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="(index,insurance) in data.insuranceAndImagesPOSTemp"
+                                        ng-if="index<10 || flag2 ">
+                                        <td ng-bind="$index + 1"><a></a></td>
+                                        <td ng-bind="insurance.startDate | date:'yyyy/MM/dd'"></td>
+                                        <td ng-bind="insurance.stopDate | date:'yyyy/MM/dd'"></td>
+                                        <td ng-bind="insurance.insuranceFee"></td>
+                                        <td ng-bind="insurance.cashBackAmount"></td>
+                                        <td ng-bind="insurance.operator"></td>
+                                        <td>
+                                            <img class="jqzoom" onclick="viewPicture(this)"
+                                                 ng-repeat="image in insurance.insuranceImagePOS"
+                                                 ng-src="data:image/png;base64,{{image}}">
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div id="demo21" style="float: right"></div>
+                            </fieldset>
+                            <div id="insurance" style="margin-left: 30%;"></div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                                <table class="layui-table custom-table">
+                                    <thead>
+                                    <tr>
+                                        <th class="layui-icon" width="10%">&#xe62d;</th>
+                                        <th width="15%">保养时间</th>
+                                        <th width="15%">保养费用（元）</th>
+                                        <th width="15%">保养单位</th>
+                                        <th width="10%">送保人</th>
+                                        <th class="layui-icon" width="15%">详情</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="(index,upkeep) in data.upkeepsTemp" ng-if="index < 10 || flag3">
+                                        <td ng-bind="$index + 1"><a></a></td>
+                                        <td ng-bind="upkeep.date | date:'yyyy/MM/dd'"></td>
+                                        <td ng-bind="upkeep.free"></td>
+                                        <td ng-bind="upkeep.site"></td>
+                                        <td ng-bind="upkeep.patenteName"></td>
+                                        <td>
+                                            <a class="layui-btn layui-btn-primary layui-btn-xs"
+                                               href="/upkeep/{{upkeep.uuid}}"><i
+                                                    class="layui-icon" title="详情">详情</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div id="demo24" style="float: right"></div>
+                            </fieldset>
+                            <div id="upkeep" style="margin-left: 30%;"></div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                                <table class="layui-table custom-table">
+                                    <thead>
+                                    <tr>
+                                        <th class="layui-icon" width="10%">&#xe62d;</th>
+                                        <th width="15%">维修时间</th>
+                                        <th width="15%">维修单位</th>
+                                        <th width="15%">维修费用</th>
+                                        <th width="15%">维修人</th>
+                                        <th width="15%">备注</th>
+                                        <th class="layui-icon" width="10%">详情</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="(index,maintain) in data.maintainsTemp" ng-if="index < 10 || flag4">
+                                        <td ng-bind="$index + 1"><a></a></td>
+                                        <td ng-bind="maintain.date | date:'yyyy/MM/dd'"></td>
+                                        <td ng-bind="maintain.site"></td>
+                                        <td ng-bind="maintain.free"></td>
+                                        <td ng-bind="maintain.patenteName"></td>
+                                        <td ng-bind="maintain.info"></td>
+                                        <td>
+                                            <a href="/maintain/{{maintain.uuid}}"
+                                               class="layui-btn layui-btn-primary layui-btn-xs" title="详情">
+                                                <i class="layui-icon">详情</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div id="demo22" style="float: right"></div>
+                            </fieldset>
+                            <div id="maintain" style="margin-left: 30%;"></div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                                <table class="layui-table custom-table">
+                                    <thead>
+                                    <tr>
+                                        <th class="layui-icon" width="10%">&#xe62d;</th>
+                                        <th width="15%">年检有效期至</th>
+                                        <th width="15%">上传时间</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="(index,vehicleYearCheck) in data.vehicleYearChecksTemp"
+                                        ng-if="index < 10 || flag5">
+                                        <td ng-bind="$index + 1"><a></a></td>
+                                        <td ng-bind="vehicleYearCheck.validityDate | date: 'yyyy/MM/dd'"></td>
+                                        <td ng-bind="vehicleYearCheck.uploadTime  | date: 'yyyy/MM/dd'"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div id="demo23" style="float: right"></div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </fieldset>
+
+
+    </div>
+
+    <script src="/modules/vehicle/vehicleDetailsCtrl.js"></script>
+    <div th:replace="vehicle/pop/insurancePop::div"></div>
+</div>
+</body>
+<script>
+    layui.use('flow', function () {
+        var flow = layui.flow;
+        flow.lazyimg({
+            elem: '#LAY_demo3 img'
+            , scrollElem: '#LAY_demo3' //一般不用设置，此处只是演示需要。
+        });
+    });
+</script>
+<script type="text/javascript">
+    function viewPicture(obj) {
+        var picture = $(obj);
+        var width = picture.attr("width");
+        var height = picture.attr("height");
+        var src = picture.attr("src");
+        var scaleWH = width / height;
+        var bigH = 600;
+        var bigW = scaleWH * bigH;
+        if (bigW > 900) {
+            bigW = 900;
+            bigH = bigW / scaleWH;
+        }
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 1,
+            shadeClose: true,
+            area: [bigW + 'px', bigH + 'px'],
+            content: "<img width='" + bigW + "' height='" + bigH + "' src=" + src + " />"
+        });
+    }
+</script>
+</html>

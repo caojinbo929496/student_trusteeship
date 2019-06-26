@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head"></head>
+<body ng-app="scriptApp" ng-controller="fuelCardDetailCtrl">
+
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body layui-main">
+
+        <div class="x-nav">
+            <div class="tips-header" style="">
+                <a href="#">
+                    <h2>加油卡详情</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a href="#">加油卡管理</a><span lay-separator="">/</span>
+                              <a><cite>加油卡详情</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <div style="margin:auto 10%;">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">主卡号：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" class="layui-input" th:value="${masterCardNumber}"
+                                       id="masterCardNumber">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">副卡号：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" class="layui-input"
+                                       th:value="(${viceCardNumber}==0?'':${viceCardNumber})" id="viceCardNumber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">供应商：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" class="layui-input" th:value="((${cardMerchant}==0)?'中石油':'中石化')"
+                                       id="cardMerchant">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">车牌号码：</label>
+                            <div class="layui-input-block layui-form-select">
+                                <input type="text" class="layui-input" th:value="${carNumber}" id="carNumber">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                <legend>加油记录</legend>
+                <table class="layui-table" lay-even="" lay-skin="row">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>加油车辆</th>
+                        <th>录入里程数(KM)</th>
+                        <th>加油时间</th>
+                        <th>加油金额(元)</th>
+                        <th>加油司机</th>
+                        <th>定位地址</th>
+                        <th>里程照片</th>
+                    </tr>
+                    </thead>
+                    <tbody id="refuelingRecordTable">
+                    <
+                    <tr ng-repeat="item in refuelingList">
+                        <td ng-bind="($index + 1)+((pageOperation.currentPage-1)*pageOperation.itemsPerPage)"></td>
+                        <td ng-bind="item.carNumber"></td>
+                        <td ng-bind="item.currentMileage"></td>
+                        <td ng-bind="item.refuelingTime | date:'yyyy-MM-dd'"></td>
+                        <td ng-bind="item.refuelingMoney"></td>
+                        <td ng-bind="item.refuelingDriverName"></td>
+                        <td ng-bind="item.tradingPosition"></td>
+                        <td>
+                            <span class="layui-btn layui-btn-xs"
+                                  lay-event="detail"
+                                  title="绑定" data-ng-click="showImg(this)">查看里程照片<span
+                                    style="display: none;" ng-bind="item.imgUrl"></span></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="page-right" style="padding-right: 5%;">
+                    <tm-pagination conf="pageOperation"></tm-pagination>
+                </div>
+            </fieldset>
+        </fieldset>
+    </div>
+</div>
+
+
+</body>
+<script src="/js/fuelCardManager/fuelCardDetail.js"></script>
+</html>

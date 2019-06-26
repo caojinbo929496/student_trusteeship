@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.index.NationalPatenteMapper">
+
+    <select id="getNowExpiredPatente"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalPatentePO">
+        SELECT COUNT(1) AS
+        numberPatente FROM patente WHERE (TO_DAYS(enddate) - TO_DAYS(NOW()) ) &lt;=0
+    </select>
+
+    <select id="getThirtyDaysExpiredPatente"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalPatentePO">
+
+        SELECT COUNT(1) AS
+        numberPatente FROM patente WHERE (TO_DAYS(enddate) - TO_DAYS(NOW()) ) &lt;= 30 and (TO_DAYS(enddate) -
+        TO_DAYS(NOW()) )&gt;0
+    </select>
+
+    <select id="getSixtyDaysExpiredPatente"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalPatentePO">
+
+        SELECT COUNT(1) AS numberPatente FROM patente WHERE (TO_DAYS(enddate) -TO_DAYS(NOW()) )
+        &lt;= 60 and (TO_DAYS(enddate) -TO_DAYS(NOW()) ) &gt;0
+    </select>
+</mapper>

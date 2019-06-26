@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--<link rel="stylesheet" href="/css/fuelCardManager/fuelCardManager.css"/>-->
+<head th:replace="tpl/header::head"></head>
+<body ng-app="scriptApp" ng-controller="fuelCardManagerCtrl">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body layui-main">
+        <div class="x-nav">
+            <div class="tips-header">
+                <a href="#">
+                    <h2>加油卡管理</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a><cite>加油卡管理</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <fieldset class="layui-elem-field">
+            <div style="margin:auto 10%;">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">主卡卡号:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" ng-model="vo.masterCardNumber"
+                                           id="second-first-left-masterCard"
+                                           style="display: inline-block;width:95.5%;margin-left: 4.5%;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">副卡卡号:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" ng-model="vo.viceCardNumber"
+                                           id="second-first-right-viceCard" style="width: 92.8%;margin-left: 38px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"
+                                       style="display: inline-block;width: 16%;">车辆所属城市:</label>
+                                <div class="layui-input-block">
+                                    <input class="layui-input" ng-model="vo.city" id="second-first-left-city"
+                                           type="text" style="display: inline-block;width: 95.42%;">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">车牌号码:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" class="layui-input" ng-model="vo.bundlePlateNumber"
+                                           id="second-first-left-plate" style="width: 92.8%;margin-left: 38px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">油卡商家:</label>
+                                <div class="layui-input-block">
+                                    <select class="user-select" ng-model="vo.cardMerchant"
+                                            id="second-first-right-cardMerchant"
+                                            style="display: inline-block;width:95.8%;margin-left: 4.3%;">
+                                        <option value="all" selected="selecte">请选择</option>
+                                        <option value="0">中石油</option>
+                                        <option value="1">中石化</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label"
+                                       style="display: inline-block;width: 18%;">是否已绑定车辆:</label>
+                                <div class="layui-input-block">
+                                    <select class="user-select" ng-model="vo.ifBundle"
+                                            id="second-first-right-ifBundling"
+                                            style="display: inline-block;width: 93%;">
+                                        <option value="all">请选择</option>
+                                        <option value="yes">是</option>
+                                        <option value="no">否</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-btn-group" style="margin-left: 40%; margin-top:2%;">
+                    <button class="layui-btn" id="search-click" data-ng-click="searchClick()">查询</button>
+                    <button class="layui-btn " id="reset-list" data-ng-click="clearClick()">清空</button>
+                    <button class="layui-btn " id="export-list" data-ng-click="exportTemplateClick()">导出模板</button>
+                    <button class="layui-btn " id="import-list" data-ng-click="importFuelCardExcel()">导入油卡</button>
+                </div>
+            </div>
+
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                <legend>加油卡列表</legend>
+                <input type="button" value="添加油卡" class="layui-btn" style="margin-left:2%;" ng-click="addFuelCard()">
+                <table class="layui-table" lay-even="" lay-skin="row">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>油卡商家</th>
+                        <th>油卡类型</th>
+                        <th>主卡卡号</th>
+                        <th>副卡卡号</th>
+                        <th>当前绑定车牌号码</th>
+                        <th>车辆所属城市</th>
+                        <th>当前余额</th>
+                        <th>上次充值日期</th>
+                        <th>油卡添加时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="temp in fuelCardList">
+                        <td ng-bind="($index + 1)+((pageOperation.currentPage-1)*pageOperation.itemsPerPage)"></td>
+                        <td ng-bind="temp.cardMerchant==0?'中石油':'中石化'"></td>
+                        <td ng-bind="temp.cardType==0?'记名单用户卡':(temp.cardType==1?'记名多用户卡':'不记名单用户卡')"></td>
+                        <td ng-bind="temp.masterCardNumber"></td>
+                        <td ng-bind="temp.viceCardNumber"></td>
+                        <td ng-bind="temp.bundlePlateNumber"></td>
+                        <td ng-bind="temp.city"></td>
+                        <td ng-bind="temp.balance"></td>
+                        <td ng-bind="temp.lastRechargeTimeMilis | date:'yyyy-MM-dd'"></td>
+                        <td ng-bind="temp.addingTimeMilis | date:'yyyy-MM-dd'"></td>
+                        <td>
+                            <a class="layui-btn layui-btn-xs" data-ng-click="fuelCardDetail(temp)" lay-event="detail"
+                               title="详情">详情</a>
+                            <a class="layui-btn layui-btn-xs" data-ng-click="bindCardNum(temp)" lay-event="detail"
+                               title="绑定">绑定车牌号</a>
+                            <a class="layui-btn layui-btn-xs" data-ng-click="modifyCard(temp)" lay-event="detail"
+                               title="修改">修改</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="page-right" style="padding-right: 5%;">
+                    <tm-pagination conf="pageOperation"></tm-pagination>
+                </div>
+            </fieldset>
+
+
+        </fieldset>
+
+    </div>
+
+</div>
+</div>
+<div th:replace="fuelCardManager/pop/fuelCardManagerPop::div"></div>
+<div th:replace="fuelCardManager/pop/fuelCardManagerAddPop::div"></div>
+<div th:replace="fuelCardManager/pop/fuelCardManagerAddSeveralPop::div"></div>
+<div th:replace="fuelCardManager/pop/fuelCardManagerModifyPop::div"></div>
+</body>
+<script src="/js/fuelCardManager/jquery-3.0.0.min.js"></script>
+<script src="/js/fuelCardManager/fuelCardManager.js"></script>
+
+</html>

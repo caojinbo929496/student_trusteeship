@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.index.NationalVehicleViolationMapper">
+    <select id="getNationViolation"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalVehicleViolationPO">
+        SELECT count(status ) AS unTreated ,
+        SUM(penalty) AS penalty, SUM(deduct_mark) AS deductMark FROM violation where status='0' ;
+    </select>
+
+
+    <select id="getThisMonthViolation"
+            resultType="com.meng.student.trusteeship.entity.index.po.NationalVehicleViolationPO">
+
+        SELECT COUNT(STATUS) AS unTreated,
+        SUM(penalty) AS penalty, SUM(deduct_mark) AS deductMark FROM violation WHERE DATE_FORMAT(violation_time,'%Y%m')
+        =DATE_FORMAT(CURDATE( ) , '%Y%m')
+    </select>
+
+    <select id="getThirtyDays" resultType="com.meng.student.trusteeship.entity.index.po.NationalVehicleViolationPO">
+
+        SELECT count(STATUS) AS unTreated ,
+        SUM(penalty) AS penalty, SUM(deduct_mark) AS deductMark FROM violation WHERE DATE_SUB(CURDATE(), INTERVAL 30
+        DAY) &lt;= DATE(violation_time)
+    </select>
+
+    <select id="getSixtyDays" resultType="com.meng.student.trusteeship.entity.index.po.NationalVehicleViolationPO">
+        SELECT count(status) AS unTreated ,
+        SUM(penalty) AS penalty, SUM(deduct_mark) as deductMark FROM violation WHERE DATE_SUB(CURDATE(), INTERVAL 60
+        DAY) &lt;= DATE(violation_time)
+    </select>
+
+</mapper>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+    <script src="/lib/lay.modules/laypage.js" charset="utf-8"></script>
+</head>
+<body ng-app="scriptApp" ng-controller="vehicleMonitorCtl">
+<form>
+    <div class="layui-layout layui-layout-admin">
+        <div th:replace="tpl/side::div"></div>
+        <div class="layui-body layui-main" id="scrollBody">
+
+            <div class="x-nav">
+                <div class="tips-header">
+                    <a href="#">
+                        <h2>车辆监控</h2>
+                    </a>
+                    <div class="layui-collapse" lay-filter="test">
+                        <div class="layui-colla-item">
+                            <h2 class="layui-colla-title">
+                                <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a><cite>车辆监控</cite></a>
+                            </span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-top:15px;">
+                <div class="layui-inline">
+                    <label class="layui-form-label">城市</label>
+                    <div class="layui-input-inline">
+                        <input type="tel" name="city" lay-verify="required|phone" placeholder="请输入您想查询的城市..."
+                               autocomplete="off" class="layui-input" ng-model="city">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit="" ng-click="queryByCity()">查询</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+
+                <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                    <h3>司机违章统计（当前未处理违章）</h3>
+
+
+                    <div>
+
+                        <table class="layui-table">
+                            <tr>
+                                <td> 司机姓名</td>
+                                <td>所属仓库</td>
+                                <td>当前未处理违章</td>
+                                <td>总记分</td>
+                                <td>总罚款</td>
+                            </tr>
+                            <tr ng-repeat="temp in driverMonitors">
+                                <td ng-bind="temp.name"> 李大钊</td>
+                                <td ng-bind="temp.warehouse">武汉一仓</td>
+                                <td><a href="{{'/violation/' + temp.name}}" target="_blank"
+                                       style="color: blue; text-decoration:underline;">
+                                    <span ng-bind="temp.unTreated">10</span>条未处理</a></td>
+                                <td><span ng-bind="temp.deductMark">12 </span>分</td>
+                                <td><span ng-bind="temp.penalty">1500</span>元</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <h3>车辆违章统计（当前未处理违章）</h3>
+                    <div>
+                        <table class="layui-table">
+                            <tr>
+                                <td> 车牌号码</td>
+                                <td>所属仓库</td>
+                                <td>当前未处理违章</td>
+                                <td>总记分</td>
+                                <td>总罚款</td>
+                            </tr>
+                            <tr ng-repeat="temp in vehicleMonitors">
+                                <td ng-bind="temp.carNumber"> 鄂A12345</td>
+                                <td ng-bind="temp.warehouse">武汉一仓</td>
+                                <td><a href="{{'/violation1/' + temp.carNumber}}" target="_blank"
+                                       style="color: blue; text-decoration:underline; ">
+                                    <span ng-bind="temp.unTreated">10</span>条未处理</a></td>
+                                <td><span ng-bind="temp.deductMark">12 </span>分</td>
+                                <td><span ng-bind="temp.penalty">1500</span>元</td>
+                            </tr>
+                        </table>
+                    </div>
+
+
+                </fieldset>
+                <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                    <h3 class="h3float">车辆油耗统计（平均每公里油耗费用）</h3>
+                    <!--<h3>平均油耗：<span th:text="${average}">0.55</span>元/KM</h3>-->
+                    <h3>平均油耗：<span ng-bind="standard">0.55</span>元/km</h3>
+                    <p style="margin-top: 6px; color:#D3D3D3;">根据车辆录入的行驶里程与加油金额计算得出，仅供参考</p>
+                    <div style="width:40%;margin-left: 20%; margin-top: 15px;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">查询时间：</label>
+                            <div class="layui-input-block">
+                                <div class="layui-input-inline" id="date-time-side">
+                                    <input type="text" name="date" id="trafficDateStart" ng-model="startTime"
+                                           lay-verify="date" placeholder=""
+                                           autocomplete="off" class="layui-input"/>
+                                </div>
+                                <div class="date-time-center">
+                                    -
+                                </div>
+                                <div class="layui-input-inline" id="date-time-side">
+                                    <input type="text" name="date" id="trafficDateEnd" ng-model="endTime"
+                                           lay-verify="date" placeholder=""
+                                           autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="layui-table">
+                        <tr>
+                            <td> 车牌号码</td>
+                            <td>所属仓库</td>
+                            <td>初始里程</td>
+                            <td>终止里程</td>
+                            <td>加油金额</td>
+                            <td>平均油耗</td>
+                            <td>对比结果</td>
+                        </tr>
+                        <tr ng-repeat="temp in oilWearListTemp ">
+                            <td><a href="getRefuelingRecordForWuChenXuan/{{temp.carNumber}}" target="_blank"
+                                   style="color:blue; text-decoration:underline;"><span
+                                    ng-bind="temp.carNumber">鄂A12345</span></a></td>
+                            <td ng-bind="temp.warehouse">武汉一仓</td>
+                            <td ng-bind="temp.mileage - temp.totalMileage +'Km'">10000KM</td>
+                            <td ng-bind="temp.mileage + 'Km'">10270KM</td>
+                            <td ng-bind="temp.totalFree + '元'">200元</td>
+                            <td><span ng-bind=" (temp.totalFree/temp.totalMileage).toFixed(2) +'元/km' "
+                                      ng-if="temp.totalMileage != 0">0.74</span></td>
+                            <td>
+                            <span ng-if="(temp.totalFree/temp.totalMileage).toFixed(2) > standard" style="color:red;">
+                                高于平均油耗
+                            </span>
+                                <span ng-if="(temp.totalFree/temp.totalMileage).toFixed(2) < standard">
+                                低于平均油耗
+                            </span>
+                                <span ng-if="(temp.totalFree/temp.totalMileage).toFixed(2) == standard">
+                                持平平均油耗
+                            </span>
+
+                            </td>
+
+                        </tr>
+                    </table>
+                </fieldset>
+
+            </fieldset>
+        </div>
+
+
+    </div>
+    <script src="modules/vehicleMonitorReferCtl.js"></script>
+
+</form>
+</body>
+</html>

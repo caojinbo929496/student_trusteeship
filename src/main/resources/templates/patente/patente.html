@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<body ng-app="scriptApp" ng-controller="patenteReferCtl">
+
+<div class="layui-layout layui-layout-admin">
+
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body layui-main" id="scrollBody">
+        <input type="hidden" id="state" th:value="${state}"/>
+
+        <div class="x-nav">
+            <div class="tips-header">
+                <a href="#">
+                    <h2>驾照查询</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a><cite>驾照查询</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <div style="margin:auto 10%;">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">驾驶人:</label>
+                                <div class="layui-input-block layui-form-select">
+                                    <input type="text" name="number" ng-model="patenteName" ng-keyup="getPatenteName()"
+                                           class="layui-input" id="patenteName">
+                                    <dl class="layui-anim layui-anim-upbit" style="display:block;" ng-if="showSelect">
+                                        <dd style="" ng-click="selectValue(item)" ng-repeat="item in patenteNameList">
+                                            {{item}}
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">城市:</label>
+                                <div class="layui-input-block layui-form-select">
+                                    <input type="text" name="number" id="city" ng-model="city"
+                                           lay-verify="required|number"
+                                           ng-keyup="getCity()" class="layui-input">
+                                    <dl class="layui-anim layui-anim-upbit" style="display:block;"
+                                        ng-if="showCitySelect">
+                                        <dd style="" ng-click="selectCityValue(item.city)" ng-repeat="item in cityList">
+                                            {{item.city}}
+                                        </dd>
+                                    </dl>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--<div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">仓库:</label>
+                                <div class="layui-input-block layui-form-select">
+                                    <input type="text" name="number" id="repository" ng-model="repository" lay-verify="required|number"
+                                           autocomplete="off" ng-keyup="getRepository()" class="layui-input">
+                                    <dl class="layui-anim layui-anim-upbit" style="display:block;" ng-if="showRepositorySelect">
+                                        <dd style="" ng-click="selectRepositoryValue(item.repository)" ng-repeat="item in repositoryList" >{{item.repository}}</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+                <div class="layui-btn-group" style="margin-left: 40%; margin-top:2%;">
+                    <button class="layui-btn" ng-click="searchClick()">查询</button>
+                    <button class="layui-btn " ng-click="reset()">清空</button>
+                </div>
+            </div>
+
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                <legend>驾驶证列表</legend>
+                <table class="layui-table" lay-even="" lay-skin="row">
+                    <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>驾照姓名</th>
+                        <th>驾照号</th>
+                        <th>准驾车型</th>
+                        <th>有效期(始)</th>
+                        <th>有效期(止)</th>
+                        <th>城市</th>
+                        <!--<th>仓库</th>-->
+                        <th>使用状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="patenteTemp in patenteListTemp">
+                        <td ng-bind="($index + 1)+((paginationConf.currentPage-1)*paginationConf.itemsPerPage)"></td>
+                        <td ng-bind="patenteTemp.name">王老五</td>
+                        <td ng-bind="patenteTemp.number">421123198712315687</td>
+                        <td ng-bind="patenteTemp.type">B2</td>
+                        <td ng-bind="patenteTemp.startdate | date:'yyyy-MM-dd'">2014-09-1</td>
+                        <td ng-bind="patenteTemp.enddate | date:'yyyy-MM-dd'">2024-09-1</td>
+                        <td ng-bind="patenteTemp.city">隔壁老王</td>
+                        <!--<td ng-bind="patenteTemp.repository">2016-09-1</td>-->
+                        <td>
+                            <span ng-if="patenteTemp.state == 2">使用</span>
+                            <span ng-if="patenteTemp.state == 0">废弃</span>
+                            <span ng-if="patenteTemp.state == 1">过期</span>
+
+                        </td>
+                        <td>
+                            <a class="layui-btn layui-btn-danger layui-btn-xs" ng-if="patenteTemp.state != 0"
+                               ng-click="cancellation(patenteTemp.uuid)" title="作废">作废</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="page-right" style="padding-right: 5%;">
+                    <tm-pagination conf="paginationConf"></tm-pagination>
+                </div>
+            </fieldset>
+        </fieldset>
+    </div>
+
+
+</div>
+<script src="modules/patenteReferCtl.js"></script>
+
+</body>
+</html>

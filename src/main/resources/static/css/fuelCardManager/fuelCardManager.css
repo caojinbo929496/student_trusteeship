@@ -1,0 +1,231 @@
+html, body, body > div {
+    height: 100%;
+}
+
+body > div > .layui-body {
+    height: 93.6%;
+}
+
+#first {
+    height: 8.8%;
+    border-bottom: 1px solid #9F9F9F;
+}
+
+#first h3 {
+    margin-top: 3%;
+    margin-left: 2.6%;
+    font-size: 18px;
+}
+
+#first img {
+    margin-top: 0.5%;
+    margin-left: 94.5%;
+}
+
+#second {
+    height: 30%;
+    border-bottom: 1px solid #9F9F9F;
+}
+
+#second-first {
+    height: 65%;
+    border-bottom: 1px solid #9F9F9F;
+}
+
+#second-first-left {
+    display: inline-block;
+    height: 92%;
+    padding: 0;
+    margin: 0;
+    padding-top: 0.8%;
+    width: 50%;
+    padding-right: 1%;
+}
+
+#second-first-right {
+    display: inline-block;
+    width: 45%;
+    height: 100%;
+    margin: 0;
+    position: relative;
+    top: -3.0%;
+}
+
+#second-first-left-masterCard {
+    height: 30%;
+    width: 46%;
+    margin-left: 47%;
+}
+
+#second-first-left-masterCard > input {
+    width: 69%;
+    height: 74%;
+    margin-left: 12%;
+}
+
+#second-first-left-plate {
+    height: 30%;
+    width: 46%;
+    margin-left: 47%;
+}
+
+#second-first-left-plate > input {
+    width: 69%;
+    height: 74%;
+    margin-left: 12%;
+}
+
+#second-first-left-city {
+    height: 30%;
+    width: 46%;
+    margin-left: 47%;
+}
+
+#second-first-right {
+    position: relative;
+    top: -2%;
+    width: 40%;
+}
+
+#second-first-right > #second-first-right-viceCard {
+    height: 26%;
+    width: 68%;
+    margin: 0;
+}
+
+#second-first-right > #second-first-right-viceCard > input {
+    margin: 0;
+    width: 69%;
+    height: 75%;
+    margin-left: 9%;
+}
+
+#second-first-right-cardMerchant {
+    height: 26%;
+    width: 68%;
+}
+
+#second-first-right-cardMerchant > select {
+    width: 70%;
+    height: 74%;
+    margin-left: 9%;
+}
+
+#second-first-right-ifBundling {
+    height: 26%;
+    width: 68%;
+}
+
+#second-first-right-ifBundling > select {
+    width: 61.8%;
+    height: 74%;
+    margin-left: 8%;
+}
+
+#second-first-left-city select:nth-child(2) {
+    height: 74%;
+    margin-left: 4.8%;
+    width: 32%;
+}
+
+#second-first-left-city select:nth-child(3) {
+    height: 74%;
+    margin-left: 4.8%;
+    width: 32%;
+}
+
+#second-second input {
+    width: 100px;
+    height: 40px;
+    margin-top: 1.6%;
+    background-color: #1E9687;
+}
+
+#second-second input:nth-child(1) {
+    margin-left: 33%;
+}
+
+#second-second input:nth-child(2) {
+    margin-left: 3%;
+}
+
+#second-second input:nth-child(3) {
+    margin-left: 3%;
+}
+
+#second-second input:nth-child(4) {
+    margin-left: 3%;
+}
+
+#third {
+    padding: 0;
+    height: 50%;
+}
+
+#third-bottom {
+    height: 5%;
+    margin: 0;
+    margin-top: 2.5%;
+}
+
+#third-bottom div {
+    display: inline-block;
+}
+
+#third-bottom div:nth-child(1) {
+    margin-left: 3%;
+}
+
+#third-bottom div:nth-child(2) {
+    margin-left: 33%;
+    width: 44%;
+}
+
+#third-bottom div:nth-child(2) > div input {
+    display: inline-block;
+    width: 24px;
+    height: 16px;
+    border: 1px solid black;
+    line-height: 16px;
+    text-align: center;
+    margin-left: 10px;
+}
+
+#third-bottom div:nth-child(2) > div input:nth-child(4) {
+
+    width: 40px;
+    margin-left: 6px;
+}
+
+#third-bottom div:nth-child(2) > div input {
+    display: inline-block;
+    width: 30px;
+    height: 16px;
+    text-align: center;
+    margin-left: 12px;
+}
+
+#third-bottom div:nth-child(2) > div {
+    margin: auto;
+    position: relative;
+    right: -500px;
+}
+
+#third table tbody tr {
+    visibility: hidden;
+}
+
+#third table tbody tr th input {
+    display: inline-block;
+    width: 62px;
+    height: 30px;
+
+    line-height: 30px;
+    border: 1px solid black;
+    text-align: center;
+}
+
+#third table tbody tr th input:nth-child(1) {
+    width: 74px;
+
+}

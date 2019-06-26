@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+<!--弹出层-->
+<div id="card-bind-carNumber" style="display: none;">
+    <form style="margin-right: 60px; margin-top: 10px" class="layui-form" action="">
+        <div class="layui-row">
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">主卡卡号:</label>
+                        <div class="layui-input-block">
+                            <span id="pop-masterCardNumber" style="display:inline-block;padding-top: 10px"
+                            ></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="layui-col-xs6">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">副卡卡号:</label>
+                        <div class="layui-input-block">
+                            <span id="pop-viceCardNumber" style="display:inline-block;padding-top: 10px"
+                            ></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-xs2">
+
+                <label class="layui-form-label"
+                       style="display: inline-block;padding-left: 20.5px;width:98%;">搜索车牌号:</label>
+
+            </div>
+            <div class="layui-col-xs10">
+                <div class="grid-demo">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <input id="input-carNumber" class="layui-input" ng-change="getCarNumberNotBundled()"
+                                   ng-model="bundleCarNumber" ng-blur="ifShowCarNumberListFalse();"
+                                   ng-focus="ifShowCarNumberListTrue();"
+                                   style="position: relative;left: -81px;width:120%;">
+                            <div class="layui-form-item" style="left:-80px;top:10px;color:red;position: relative">
+                                如果车牌号已绑定其他油卡，可直接绑定并解除原油卡
+                            </div>
+                            <dl class="layui-anim layui-anim-upbit"
+                                style="display:block;border:1px solid red;margin-top:10px;padding:15px 17px;position: relative;top:-25px;left:-48px;background-color: white;"
+                                ng-if="ifShowCarNumberList&&carNumberList.length>0" ng-mouseenter="carNumberListTrue()"
+                                ng-mouseleave="carNumberListFalse()">
+                                <dd ng-click="selectCarNumber(item)" style="margin-top:4px;"
+                                    onmouseover="$(this).css('color','red').css('font-weight','bold').css('font-size','20px')"
+                                    onmouseleave="$(this).css('color','black').css('font-weight','normal').css('font-size','14px')"
+                                    ng-repeat="item in carNumberList">{{item}}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

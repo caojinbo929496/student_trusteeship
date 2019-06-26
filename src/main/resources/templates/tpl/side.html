@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--/*@thymesVar id="menuList" type="java.lang.List"*/-->
+<!--/*@thymesVar id="menu" type="com.yijiupi.entity.TreeMenu"*/-->
+<!--/*@thymesVar id="menuUtil" type="com.yijiupi.util.MenuUtil"*/-->
+<!--/*@thymesVar id="url" type="java.lang.String"*/-->
+<div class="layui-header header header-demo">
+    <div class="layui-main">
+        <a class="logo" href="/">
+            <p style="color: white; font-size: 22px">Meng</p>
+        </a>
+        <ul class="layui-nav">
+
+            <li class="layui-nav-item">
+                <a href=""><img src="http://t.cn/RCzsdCq" th:src="@{/images/2.jpg}" class="layui-nav-img"> <span
+                        th:text="${session.administrator.name}">易酒批</span></a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/loginOut">退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+        <ul class="layui-nav layui-nav-tree site-demo-nav" lay-filter="demo">
+
+            <li class="layui-nav-item"><a href="/">首页</a></li>
+            <li class="layui-nav-item layui-nav-itemed">
+                <a class="javascript:;" href="javascript:;">学生托管<span class="layui-nav-more"></span></a>
+                <dl class="layui-nav-child" style="padding-left:20px;">
+                    <dd><a href="/student/studentManager">学生信息管理</a></dd>
+                </dl>
+            </li>
+            <!--<li class="layui-nav-item"><a href="/vehicleMonitoring">车辆监控</a></li>
+            <li class="layui-nav-item layui-nav-itemed">
+                <a class="javascript:;" href="javascript:;">车辆管理<span class="layui-nav-more"></span></a>
+                <dl class="layui-nav-child" style="padding-left:20px;">
+                    <dd><a href="/vehicle/newVehicle">新增车辆</a></dd>
+                    <dd><a href="/vehicle/vehicleQuery/0">车辆查询</a></dd>
+                    <dd><a href="/fuelCardManager/refuelRecord">加油记录</a></dd>
+                    <dd><a href="/violation/violationList/0">违章记录</a></dd>
+                    <dd><a href="/maintainList">维修记录</a></dd>
+                    <dd><a href="/upkeep">保养记录</a></dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item"><a href="/fuelCardManager/fuelCardManager">加油卡管理</a></li>
+            <li class="layui-nav-item"><a href="/patente">驾照查询</a></li>
+            <li class="layui-nav-item"><a href="/vehicle/driverLicense">行驶证管理</a></li>-->
+        </ul>
+    </div>
+    <script>
+        element.init();
+    </script>
+</div>
+</body>
+</html>

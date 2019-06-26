@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<style type="text/css">
+    .jqzoom {
+        cursor: pointer;
+    }
+</style>
+<body ng-app="scriptApp" ng-controller="maintainDetailReferCtl">
+
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <!--/*@thymesVar id="maintainId" type="com"*/-->
+    <input type="hidden" th:value="${maintainId}" id="maintainId"/>
+    <div class="layui-body layui-main" id="scrollBody">
+
+        <div class="x-nav">
+            <div class="tips-header">
+                <a href="#">
+                    <h2>维修详情</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a href="#">车辆管理</a><span lay-separator="">/</span>
+                              <a href="/maintainList">维修记录</a><span lay-separator="">/</span>
+                              <a><cite>维修详情</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field" style="margin-top: 20px;">
+            <legend>维修详情</legend>
+            <table class="layui-table" lay-even="" lay-skin="row">
+                <colgroup>
+                    <col width="150">
+                    <col width="300">
+                    <col width="150">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td>车牌号码</td>
+                    <td ng-bind="maintain.carNumber">鄂A88888</td>
+                    <td>维修时间</td>
+                    <td ng-bind="maintain.date | date:'yyyy-MM-dd hh:mm:ss'">1982-01-01</td>
+                </tr>
+                <tr>
+                    <td>报修人</td>
+                    <td ng-bind="maintain.patenteName">如意</td>
+                    <td>维修单位</td>
+                    <td ng-bind="maintain.compannyName">车轮滚滚 4S 店</td>
+                </tr>
+                <tr>
+                    <td> 维修地点</td>
+                    <td ng-bind="maintain.site">武汉市关山大道</td>
+                    <td> 维修费用(元)</td>
+                    <td ng-bind="maintain.free">6969</td>
+                </tr>
+                <tr>
+                    <td>备注</td>
+                    <td ng-bind="maintain.info" colspan="3">拉缸，前大灯不亮</td>
+
+                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table" lay-even="" lay-skin="row">
+                <colgroup>
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td>
+                        维修清单照片
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img class="jqzoom" ng-repeat="temp in maintain.imageMaintains " onclick="viewPicture(this)"
+                             ng-src="{{temp.path}}">
+
+                        <!-- &nbsp;&nbsp;&nbsp;<img src="/images/upkeep/2.jpg">-->
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        维修缴费发票
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img class="jqzoom" ng-repeat="temp in maintain.imageMaintainFrees " onclick="viewPicture(this)"
+                             ng-src="{{temp.path}}">
+                        <!--&nbsp;&nbsp;&nbsp;<img src="/images/upkeep/2.jpg">-->
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        维修故障
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img class="jqzoom" ng-repeat="temp in maintain.imageMaintainFaults" onclick="viewPicture(this)"
+                             ng-src="{{temp.path}}">
+                        <!--&nbsp;&nbsp;&nbsp;<img src="/images/upkeep/2.jpg">-->
+
+                    </td>
+                </tr>
+
+
+                </tbody>
+            </table>
+
+
+        </fieldset>
+        <div style="margin: 0 auto;text-align:center;">
+            <a class="layui-btn layui-btn-primary layui-btn-small"
+               href="/maintainList"><i
+                    class="layui-icon" title="返回">&#xe603;</i>
+            </a>
+        </div>
+
+    </div>
+
+
+</div>
+<script src="/modules/maintainDetail.js"></script>
+<script type="text/javascript">
+    function viewPicture(obj) {
+        var picture = $(obj);
+        var width = picture.attr("width");
+        var height = picture.attr("height");
+        var src = picture.attr("src");
+        var scaleWH = width / height;
+        var bigH = 600;
+        var bigW = scaleWH * bigH;
+        if (bigW > 900) {
+            bigW = 900;
+            bigH = bigW / scaleWH;
+        }
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 1,
+            shadeClose: true,
+            area: [bigW + 'px', bigH + 'px'],
+            content: "<img width='" + bigW + "' height='" + bigH + "' src=" + src + " />"
+        });
+    }
+</script>
+</body>
+</html>

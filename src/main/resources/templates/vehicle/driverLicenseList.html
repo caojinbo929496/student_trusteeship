@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<style>
+    .label-left {
+        float: left;
+        display: block;
+        padding: 9px 15px;
+        width: 100px;
+        font-weight: 400;
+        line-height: 20px;
+        text-align: right;
+    }
+
+    #date-time-side {
+        width: 46% !important;
+    }
+</style>
+<body ng-app="scriptApp" ng-controller="driverLicenseCtrl">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body layui-main">
+
+        <div class="x-nav">
+            <div class="tips-header">
+                <a href="#">
+                    <h2>行驶证管理</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a><cite>行驶证管理</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <div style="margin:auto 10%;">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">车牌号码:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="number" ng-model="vo.carNumber"
+                                           class="layui-input" id="carNumber">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="label-left">年检有效期至:</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-input-inline" id="date-time-side">
+                                        <input type="text" name="date" id="startDate" class="layui-input"/>
+                                    </div>
+                                    <div class="date-time-center">
+                                        -
+                                    </div>
+                                    <div class="layui-input-inline" id="date-time-side">
+                                        <input type="text" name="date" id="endDate" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-btn-group" style="margin-left: 40%; margin-top:2%;">
+                    <button type="button" class="demoTable layui-btn" data-type="reload" ng-click="clickButton()">查询
+                    </button>
+                    <button type="reset" class="layui-btn " ng-click="clearData()">清空</button>
+                </div>
+            </div>
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                <legend>行驶证查询表</legend>
+                <table class="layui-hide" id="driverLicenseList" lay-filter="user"></table>
+            </fieldset>
+
+
+        </fieldset>
+    </div>
+
+    <script src="/modules/vehicle/driverLicenseCtrl.js"></script>
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.violation.ViolationMapper">
+    <resultMap id="BaseResultMap" type="com.meng.student.trusteeship.entity.vehicle.po.ViolationPO">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="violation_information" property="violationInformation" jdbcType="VARCHAR"/>
+        <result column="violation_time" property="violationTime" jdbcType="TIMESTAMP"/>
+        <result column="violation_place" property="violationPlace" jdbcType="VARCHAR"/>
+        <result column="processing_unit" property="processingUnit" jdbcType="VARCHAR"/>
+        <result column="penalty" property="penalty" jdbcType="DECIMAL"/>
+        <result column="deduct_mark" property="deductMark" jdbcType="INTEGER"/>
+        <result column="car_id" property="carId" jdbcType="VARCHAR"/>
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="offender_id" property="offenderId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+        <result column="offender_id" property="offenderId" jdbcType="VARCHAR"/>
+        <result column="offender" property="offender" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="UnityResultMap" type="com.meng.student.trusteeship.entity.vehicle.po.ViolationUnityPo">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="violation_information" property="violationInformation" jdbcType="VARCHAR"/>
+        <result column="violation_time" property="violationTime" jdbcType="TIMESTAMP"/>
+        <result column="violation_place" property="violationPlace" jdbcType="VARCHAR"/>
+        <result column="processing_unit" property="processingUnit" jdbcType="VARCHAR"/>
+        <result column="penalty" property="penalty" jdbcType="DECIMAL"/>
+        <result column="deduct_mark" property="deductMark" jdbcType="INTEGER"/>
+        <result column="car_id" property="carId" jdbcType="VARCHAR"/>
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+        <result column="offender_id" property="offenderId" jdbcType="VARCHAR"/>
+        <result column="offender" property="offender" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="warehouse" property="warehouse" jdbcType="VARCHAR"/>
+        <result column="number" property="patenteNumber" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="ViolationCountInfo" type="com.meng.student.trusteeship.entity.vehicle.po.ViolationCountInfoPO">
+        <result column="unhandled_illegal_records" property="unhandledIllegalRecords" jdbcType="INTEGER"/>
+        <result column="total_deduct_mark" property="totalDeductMark" jdbcType="INTEGER"/>
+        <result column="total_fine" property="totalFine" jdbcType="INTEGER"/>
+        <result column="car_number" property="carNumber" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, violation_information, violation_time, violation_place, processing_unit, penalty, deduct_mark, car_id,
+        car_number, offender_id, status, offender_id
+    </sql>
+    <select id="getViolationCountInfo" resultMap="ViolationCountInfo" parameterType="java.lang.String">
+        select sum(t1.penalty) as total_fine, sum(deduct_mark) as total_deduct_mark , t0.car_number as car_number,
+        t0.violationCount as unhandled_illegal_records
+        from (select car_number, count(status) as violationCount from violation where car_number= #{carNumber} and
+        status = 0) t0,
+        violation t1
+        where t0.car_number= t1.car_number group by car_number;
+    </select>
+    <select id="getViolationPOByOffenderId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT *
+        FROM violation WHERE offender_id = #{offenderId}
+    </select>
+    <select id="getViolationPOById" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT *
+        FROM violation WHERE id = #{id}
+    </select>
+    <select id="listViolationPOByCarNumber" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT *
+        FROM violation WHERE car_number = #{carNumber}
+    </select>
+    <select id="updateStatus" parameterType="java.util.Map">
+        UPDATE violation
+        SET status = #{status}
+        WHERE car_number = #{carNumber} AND violation_time = #{violationTime}
+    </select>
+    <select id="updateAllStatus" parameterType="java.lang.String">
+        UPDATE violation
+        SET status = TRUE
+        WHERE car_number = #{carNumber}
+    </select>
+    <select id="conutViolation" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM violation
+    </select>
+    <select id="save" parameterType="com.meng.student.trusteeship.entity.vehicle.po.ViolationPO">
+        INSERT INTO violation (id, violation_time,violation_information ,
+        violation_place, processing_unit, penalty, deduct_mark, car_id, car_number,status, offender, offender_id) VALUES
+        (#{id,jdbcType=VARCHAR},#{violationTime,jdbcType=TIMESTAMP},#{violationInformation,jdbcType=VARCHAR},
+        #{violationPlace,jdbcType=VARCHAR},#{processingUnit,jdbcType=VARCHAR}, #{penalty,jdbcType=DECIMAL},
+        #{deductMark,jdbcType=INTEGER},#{carId,jdbcType=VARCHAR}, #{carNumber,jdbcType=VARCHAR},
+        #{status,jdbcType=TINYINT},#{offender,jdbcType=VARCHAR},#{offenderId,jdbcType=VARCHAR})
+    </select>
+    <select id="listViolation" resultMap="UnityResultMap" parameterType="java.util.Map">
+        select t0.*, t3.number, t1.city, t1.warehouse from (SELECT * from violation
+        <where>
+            <if test="carNumber != null">
+                car_number LIKE '%${carNumber}%'
+            </if>
+            <if test="offender != null">
+                AND offender LIKE '%${offender}%'
+            </if>
+            <if test="offenderId != null">
+                and offender_id = #{offenderId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="startDate != null">
+                and violation_time &gt; #{startDate}
+            </if>
+            <if test="endDate != null">
+                and violation_time &lt; #{endDate}
+            </if>
+        </where>
+        ) t0
+        LEFT JOIN (SELECT * FROM car
+        ) t1
+        on t0.car_number=t1.car_number
+        LEFT JOIN patente t3
+        ON t0.offender_id = t3.uuid
+        <where>
+            t1.annual_inspection_status = '当前年检'
+            <if test="city != null">
+                AND t1.city LIKE '%${city}%'
+            </if>
+            <if test="warehouse != null">
+                AND t1.warehouse LIKE '%${warehouse}%'
+            </if>
+            <if test="offenderNumber != null">
+                AND t3.number LIKE '%${offenderNumber}%'
+            </if>
+        </where>
+        <if test="queryStatus == null">
+            LIMIT #{currentPage},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getViolationByCarNumberAndTime" parameterType="map" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        violation
+        WHERE car_number = #{carNumber}
+        AND violation_time = #{time};
+
+    </select>
+
+</mapper>

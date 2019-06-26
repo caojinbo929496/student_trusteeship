@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.upkeep.UpkeepMapper">
+    <resultMap id="BaseResultMap" type="com.meng.student.trusteeship.entity.upkeep.UpkeepPO">
+        <id column="uuid" property="uuid" jdbcType="CHAR"/>
+        <result column="patente_id" property="patenteId" jdbcType="CHAR"/>
+        <result column="patente_name" property="patenteName" jdbcType="CHAR"/>
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="date" property="date" jdbcType="DATE"/>
+        <result column="mileage" property="mileage" jdbcType="INTEGER"/>
+        <result column="free" property="free" jdbcType="DECIMAL"/>
+        <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+        <result column="site" property="site" jdbcType="VARCHAR"/>
+        <result column="info" property="info" jdbcType="VARCHAR"/>
+        <result column="berichten" property="berichten" jdbcType="DATE"/>
+        <result column="car_id" property="carId" jdbcType="CHAR"/>
+        <result column="warehouse" property="warehouse" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"></result>
+        <collection property="imageUpkeeps" ofType="com.meng.student.trusteeship.entity.upkeep.ImageUpkeepPO">
+            <id property="uuid" column="faultId"></id>
+            <result property="upkeepId" column="faultfk"></result>
+            <result property="path" column="faultpath"></result>
+        </collection>
+        <collection property="imageUpkeepFrees" ofType="com.meng.student.trusteeship.entity.upkeep.ImageUpkeepFreePO">
+            <id property="uuid" column="freeid"></id>
+            <result property="upkeepId" column="freefk"></result>
+            <result property="path" column="freepath"></result>
+        </collection>
+
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+        uuid, patente_id, patente_name, car_number, date, mileage, free, company_name, site,
+        info, berichten, car_id, warehouse
+    </sql>
+
+    <select id="getByPrimaryKey" resultMap="BaseResultMap"
+            parameterType="java.lang.String">
+        SELECT
+        t1.*,
+        t2.uuid faultId,
+        t2.`upkeep_id` faultfk,
+        t2.`path` faultpath,
+        t3.`uuid` freeid,
+        t3.`upkeep_id` freefk,
+        t3.`path` freepath
+        FROM
+        upkeep t1
+        LEFT JOIN image_upkeep t2
+        ON t1.uuid = t2.upkeep_id
+        LEFT JOIN image_upkeep_free t3
+        ON t3.upkeep_id = t1.uuid
+        WHERE t1.uuid = #{uuid,jdbcType=CHAR};
+
+
+    </select>
+    <select id="getByCarNumber" resultType="com.meng.student.trusteeship.entity.upkeep.UpkeepPO"
+            parameterType="java.lang.String">
+        select
+        uuid, patente_id patenteId, patente_name patenteName, car_number carNumber, date, mileage, free, company_name
+        companyName, site,
+        info, berichten, car_id carId
+        from upkeep
+        where car_number = #{carNumber,jdbcType=VARCHAR};
+    </select>
+    <select id="listPage" resultMap="BaseResultMap" parameterType="map">
+        SELECT t1.*,t2.uuid faultId,t2.`upkeep_id` faultfk,t2.`path` faultpath,t3.`uuid` freeid, t3.`upkeep_id` freefk,
+        t3.`path` freepath,
+        t0.warehouse
+        FROM car t0 ,(SELECT * FROM upkeep LIMIT #{startRows},#{rowsNum}) t1
+        LEFT JOIN image_upkeep t2 ON t1.uuid = t2.upkeep_id
+        LEFT JOIN image_upkeep_free t3 ON t1.uuid = t3.upkeep_id
+        WHERE t0.`id` = t1.car_id
+    </select>
+
+    <select id="queryKeyWords" resultMap="BaseResultMap"
+            parameterType="com.meng.student.trusteeship.entity.QueryCondition">
+
+        SELECT DISTINCT t1.*,t0.warehouse, t0.city
+        FROM car t0 ,(SELECT * FROM upkeep
+        <where>
+            <if test="startDate != null">
+                date &gt;= '${startDate}' and
+            </if>
+
+            <if test="endDate != null">
+                date &lt; '${endDate}' and
+            </if>
+            <if test="carNumber != null">
+                car_number like '%${carNumber}%' and
+            </if>
+            <if test="patenteName != null">
+                patente_name like '%${patenteName}%' and
+            </if>
+            1=1
+        </where>
+        ) t1
+        <where>
+            t0.`id` = t1.car_id and
+            <if test="cityName != null">
+                city like '%${cityName}%' and
+            </if>
+            <if test="repository != null">
+                warehouse like '%${repository}%' and
+            </if>
+        </where>
+        1=1
+        order BY t1.berichten desc
+        LIMIT #{currentPage},#{pageSize}
+    </select>
+    <select id="getCounts" parameterType="com.meng.student.trusteeship.entity.QueryCondition" resultType="int">
+
+        SELECT COUNT(*)
+        FROM car t0 ,(SELECT * FROM upkeep
+        <where>
+            <if test="startDate != null">
+                date &gt;= '${startDate}' and
+            </if>
+
+            <if test="endDate != null">
+                date &lt; '${endDate}' and
+            </if>
+            <if test="carNumber != null">
+                car_number like '%${carNumber}%' and
+            </if>
+            <if test="patenteName != null">
+                patente_name like '%${patenteName}%' and
+            </if>
+            1=1
+        </where>
+        ) t1
+        <where>
+            t0.`id` = t1.car_id and
+            <if test="cityName != null">
+                city like '%${cityName}%' and
+            </if>
+            <if test="repository != null">
+                warehouse like '%${repository}%' and
+            </if>
+            1=1
+        </where>
+    </select>
+
+    <select id="getCount" resultType="int">
+        SELECT count(*) from upkeep;
+    </select>
+
+    <select id="listUpkeepByCarNumberAndPatenteNumber" resultMap="BaseResultMap"
+            parameterType="com.meng.student.trusteeship.entity.upkeep.query.UpkeepQueryCondition">
+        SELECT
+        t1.*,
+        t2.`path` faultpath,
+        t2.`uuid` faultId,
+        t2.upkeep_id faultfk,
+        t3.`path` freepath,
+        t3.upkeep_id freefk,
+        t3.`uuid` freeid
+        FROM
+        upkeep t1
+        LEFT JOIN image_upkeep t2
+        ON t1.`uuid` = t2.upkeep_id
+        LEFT JOIN image_upkeep_free t3
+        ON t1.`uuid` = t3.`upkeep_id`
+        LEFT JOIN patente t4
+        ON t4.`uuid` = t1.`patente_id`
+        WHERE
+        <if test="carNumber != null">
+            t1.`car_number`=#{carNumber} and
+        </if>
+        <if test="patenteNumber != null">
+            t4.`number`=#{patenteNumber} and
+        </if>
+        1=1
+        order by t1.berichten desc
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from upkeep
+        where uuid = #{uuid,jdbcType=CHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.meng.student.trusteeship.entity.upkeep.UpkeepPO">
+        insert into upkeep (uuid, patente_id, patente_name,
+        car_number, date, mileage,
+        free, company_name, site,
+        info, berichten, car_id, patente_number
+        )
+        values (#{uuid,jdbcType=CHAR}, #{patenteId,jdbcType=CHAR}, #{patenteName,jdbcType=CHAR},
+        #{carNumber,jdbcType=VARCHAR}, #{date,jdbcType=TIMESTAMP}, #{mileage,jdbcType=INTEGER},
+        #{free,jdbcType=DECIMAL}, #{companyName,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR},
+        #{info,jdbcType=VARCHAR}, #{berichten,jdbcType=TIMESTAMP}, #{carId,jdbcType=CHAR},
+        #{patenteNumber,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <insert id="insertUpkeepImageBatch" parameterType="java.util.List">
+        insert into image_upkeep(uuid, upkeep_id, path)
+        VALUES
+        <foreach collection="list" item="image" separator="," index="index">
+            (#{image.uuid,jdbcType=CHAR}, #{image.upkeepId,jdbcType=CHAR},#{image.path,jdbcType=VARCHAR})
+        </foreach>
+
+    </insert>
+    <insert id="insertUpkeepImageFreeBatch" parameterType="java.util.List">
+        insert into image_upkeep_free(uuid, upkeep_id, path)
+        VALUES
+        <foreach collection="list" item="image" separator="," index="index">
+            (#{image.uuid,jdbcType=CHAR}, #{image.upkeepId,jdbcType=CHAR},#{image.path,jdbcType=VARCHAR})
+        </foreach>
+
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.meng.student.trusteeship.entity.upkeep.UpkeepPO">
+        update upkeep
+        <set>
+            <if test="patenteId != null">
+                patente_id = #{patenteId,jdbcType=CHAR},
+            </if>
+            <if test="patenteName != null">
+                patente_name = #{patenteName,jdbcType=CHAR},
+            </if>
+            <if test="carNumber != null">
+                car_number = #{carNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="date != null">
+                date = #{date,jdbcType=TIMESTAMP},
+            </if>
+            <if test="mileage != null">
+                mileage = #{mileage,jdbcType=INTEGER},
+            </if>
+            <if test="free != null">
+                free = #{free,jdbcType=DECIMAL},
+            </if>
+            <if test="companyName != null">
+                company_name = #{companyName,jdbcType=VARCHAR},
+            </if>
+            <if test="site != null">
+                site = #{site,jdbcType=VARCHAR},
+            </if>
+            <if test="info != null">
+                info = #{info,jdbcType=VARCHAR},
+            </if>
+            <if test="berichten != null">
+                berichten = #{berichten,jdbcType=TIMESTAMP},
+            </if>
+            <if test="carId != null">
+                car_id = #{carId,jdbcType=CHAR},
+            </if>
+        </set>
+        where uuid = #{uuid,jdbcType=CHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.meng.student.trusteeship.entity.upkeep.UpkeepPO">
+        update upkeep
+        set patente_id = #{patenteId,jdbcType=CHAR},
+        patente_name = #{patenteName,jdbcType=CHAR},
+        car_number = #{carNumber,jdbcType=VARCHAR},
+        date = #{date,jdbcType=TIMESTAMP},
+        mileage = #{mileage,jdbcType=INTEGER},
+        free = #{free,jdbcType=DECIMAL},
+        company_name = #{companyName,jdbcType=VARCHAR},
+        site = #{site,jdbcType=VARCHAR},
+        info = #{info,jdbcType=VARCHAR},
+        berichten = #{berichten,jdbcType=TIMESTAMP},
+        car_id = #{carId,jdbcType=CHAR}
+        where uuid = #{uuid,jdbcType=CHAR}
+    </update>
+</mapper>

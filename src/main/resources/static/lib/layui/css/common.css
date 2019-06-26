@@ -1,0 +1,359 @@
+.x-nav {
+    padding: 0 20px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 99;
+    border-bottom: 1px solid #e5e5e5;
+    line-height: 39px;
+    height: 39px;
+    overflow: hidden;
+}
+
+.x-nav > .tips-header > a > .active {
+    color: #009688;
+}
+
+.x-nav > .tips-header > a > cite {
+    cursor: pointer;
+}
+
+.x-nav > .tips-header > a > cite:hover {
+    color: #009688;
+}
+
+.x-nav > .tips-header {
+    visibility: visible;
+    display: inline-block;
+}
+
+.demo--label {
+    margin: 8px 20px 0 0;
+    display: inline-block
+}
+
+.demo--radio {
+    display: none
+}
+
+.demo--radioInput {
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 100%;
+    display: inline-block;
+    height: 16px;
+    margin-right: 10px;
+    margin-top: -1px;
+    vertical-align: middle;
+    width: 16px;
+    line-height: 1
+}
+
+.demo--radio:checked + .demo--radioInput:after {
+    background-color: #57ad68;
+    border-radius: 100%;
+    content: "";
+    display: inline-block;
+    height: 12px;
+    margin: 2px;
+    width: 12px
+}
+
+.demo--checkbox.demo--radioInput, .demo--radio:checked + .demo--checkbox.demo--radioInput:after {
+    border-radius: 0
+}
+
+.demo-label {
+    margin: 8px 20px 0 0;
+    display: inline-block
+}
+
+.demo-radio {
+    display: none
+}
+
+.demo-radioInput {
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 100%;
+    display: inline-block;
+    height: 16px;
+    margin-right: 10px;
+    margin-top: -1px;
+    vertical-align: middle;
+    width: 16px;
+    line-height: 1
+}
+
+.demo-radio:checked + .demo-radioInput:after {
+    background-color: #57ad68;
+    border-radius: 100%;
+    content: "";
+    display: inline-block;
+    height: 12px;
+    margin: 2px;
+    width: 12px
+}
+
+/*******STYLE 4*******/
+.chk_1, .chk_2, .chk_3, .chk_4 {
+    display: none;
+}
+
+.chk_4 + label {
+    background-color: #FFF;
+    padding: 11px 9px;
+    border-radius: 7px;
+    display: inline-block;
+    position: relative;
+    margin-right: 30px;
+    background: #d2d2d2;
+    width: 28px;
+    height: 5px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(210, 210, 210, 0.4);
+}
+
+.chk_4 + label:before {
+    content: ' ';
+    position: absolute;
+    background: #FFF;
+    top: 0px;
+    z-index: 99999;
+    left: 0px;
+    width: 24px;
+    color: #FFF;
+    height: 27px;
+    border-radius: 7px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+/*.chk_4 + label:after {*/
+/*content: '';*/
+/*position: absolute;*/
+/*top: 7px;*/
+/*left: 37px;*/
+/*font-size: 1.2em;*/
+/*color: white;*/
+/*font-weight: bold;*/
+/*left: 8px;*/
+/*padding: 5px;*/
+/*top: 4px;*/
+/*border-radius: 100px;*/
+/*}*/
+
+.chk_4:checked + label {
+    background: #57ad68;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(146, 196, 245, 0.4);
+}
+
+.chk_4:checked + label:after {
+    content: '';
+    left: 10px;
+}
+
+.chk_4:checked + label:before {
+    content: ' ';
+    position: absolute;
+    z-index: 99999;
+    left: 22px;
+}
+
+.chk_4 + label:after {
+    left: 35px;
+}
+
+.demo-checkbox.demo-radioInput, .demo-radio:checked + .demo-checkbox.demo-radioInput:after {
+    border-radius: 0
+}
+
+.dynamic-form-input {
+    width: 100%;
+}
+
+.dynamic-form-input div {
+    display: inline-block;
+}
+
+.dynamic-form-input div:nth-child(1) {
+    float: left;
+    width: 2%;
+}
+
+.dynamic-form-input div:nth-child(2) {
+    float: left;
+    width: 70%;
+}
+
+.dynamic-form-input div:nth-child(3) {
+    float: left;
+    width: 10%;
+}
+
+.dynamic-form-input div:nth-child(3) i:hover {
+    cursor: pointer
+}
+
+.dynamic-form input, .dynamic-form textarea {
+    margin-bottom: 5px;
+}
+
+.dynamic-form > div:not(:first-child) {
+    clear: both
+}
+
+.hide-button {
+    display: inline-block;
+    position: relative;
+}
+
+.hide-button-ul {
+    /* display:none; */
+    position: absolute;
+    left: 60px;
+    top: 0px;
+    min-width: 100px;
+    line-height: 20px;
+    padding: 5px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
+    border: 1px solid #d2d2d2;
+    background-color: #fff;
+    z-index: 100;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.hide-button > ul > li {
+    padding: 2px;
+    margin: 1px;
+    text-align: center;
+}
+
+.hide-button > ul > li:hover {
+    border: 1px solid #009688;
+    cursor: pointer;
+}
+
+.layui-form-choose {
+    margin-top: 20px;
+}
+
+.layui-form-choose select {
+    line-height: 20px;
+    position: relative;
+    float: left;
+    display: block;
+    padding: 9px 15px;
+    width: 400px;
+    font-weight: 400;
+    text-align: right;
+}
+
+.layui-form-choose select option {
+    padding: 0 10px;
+    line-height: 36px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-distance {
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.pop-content {
+    padding: 20px;
+}
+
+.layui-body {
+    margin: auto 20px;
+}
+
+.layui-timeline-item:before, hr {
+    background-color: #e6e6e6
+}
+
+.layui-timeline {
+    padding-left: 5px
+}
+
+.layui-timeline-item {
+    position: relative;
+    padding-bottom: 20px
+}
+
+.layui-timeline-axis {
+    position: absolute;
+    left: -5px;
+    top: 0;
+    z-index: 10;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    background-color: #fff;
+    color: #5FB878;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer
+}
+
+.layui-timeline-axis:hover {
+    color: #FF5722
+}
+
+.layui-timeline-item:before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0;
+    z-index: 0;
+    width: 1px;
+    height: 100%
+}
+
+.layui-timeline-item:last-child:before {
+    display: none
+}
+
+.layui-timeline-item:first-child:before {
+    display: block
+}
+
+.layui-timeline-content {
+    padding-left: 25px
+}
+
+.layui-timeline-title {
+    position: relative;
+    margin-bottom: 10px
+}
+
+.layui-badge-rim {
+    position: relative;
+    display: inline-block;
+    padding: 0 6px;
+    font-size: 12px;
+    text-align: center;
+    background-color: #FF5722;
+    color: #fff;
+    border-radius: 2px
+}
+
+.layui-badge-rim {
+    height: 18px;
+    line-height: 18px;
+    border-width: 1px;
+    border-style: solid;
+    background-color: #fff;
+    color: #666
+}
+
+.layui-elem-quote {
+    margin-bottom: 10px;
+    padding: 15px;
+    line-height: 22px;
+    border-left: 5px solid #009688;
+    border-radius: 0 2px 2px 0;
+    background-color: #f2f2f2
+}
+
+

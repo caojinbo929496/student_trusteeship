@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<body ng-app="scriptApp" ng-controller="newVehicleCtrl">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <div class="layui-body layui-main">
+        <div class="x-nav">
+            <div class="tips-header" style="">
+                <a href="#">
+                    <h2>新增车辆</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a href="#">车辆管理</a><span lay-separator="">/</span>
+                              <a><cite>新增车辆</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <div style="margin:auto 10%;">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">城市:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="city" ng-model="commit.city" class="layui-input" id="city">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">车牌号码:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="number" id="carNumber" ng-model="commit.carNumber"
+                                           lay-verify="required|number"
+                                           autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">所属仓库:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="number" id="warehouse" ng-model="commit.warehouse"
+                                           lay-verify="required|number"
+                                           autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">车辆状态:</label>
+                                <div class="layui-input-block">
+                                    <select class="user-select" name="status" id="status" ng-model="commit.status">
+                                        <option value="">请选择</option>
+                                        <option value="1">启用</option>
+                                        <option value="0">停用</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="layui-btn-group" style="margin-left: 40%; margin-top:2%;">
+                <button class="layui-btn" ng-click="clickButton()">查询</button>
+                <button class="layui-btn " ng-click="clearData()">清空</button>
+                <button class="layui-btn" ng-click="exportTemplate()">下载模板</button>
+                <button class="layui-btn " ng-click="importInformation()">导入信息</button>
+            </div>
+
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                <legend>新增车辆列表</legend>
+                <table class="layui-hide" id="newVehicleList" lay-filter="demo"></table>
+                <script type="text/html" id="barDemo">
+                    <a class="layui-btn layui-btn-xs" lay-event="detail">车辆信息补全</a>
+                </script>
+            </fieldset>
+        </fieldset>
+
+        <script src="/modules/vehicle/newVehicleCtrl.js"></script>
+
+
+    </div>
+    <div th:replace="vehicle/pop/vehiclePop::div"></div>
+    <div th:replace="vehicle/pop/AddSeveralInsurancePop::div"></div>
+</body>
+</html>

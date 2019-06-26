@@ -1,0 +1,107 @@
+html, body, body > div {
+    height: 100%;
+}
+
+body > div > .layui-body {
+    height: 93.6%;
+    background-color: #009f95;
+}
+
+#first {
+    height: 8.8%;
+    border-bottom: 1px solid #9F9F9F;
+}
+
+#first h3 {
+    margin-top: 3%;
+    margin-left: 2.6%;
+    font-size: 18px;
+}
+
+#first img {
+    margin-top: 0.5%;
+    margin-left: 94.5%;
+}
+
+#second {
+    height: 30%;
+    border-bottom: 1px solid #9F9F9F;
+}
+
+#second-first {
+    height: 65%;
+    border-bottom: 1px solid #9F9F9F;
+}
+
+#second-first-left {
+    display: inline-block;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    padding-top: 0.3%;
+    width: 50%;
+    padding-right: 1%;
+
+}
+
+#second-first-left-city {
+    height: 30%;
+    margin-left: 40%;
+    width: 100%;
+}
+
+#second-first-left select {
+    width: 12%;
+    height: 70%;
+}
+
+#second-first-left > div select:nth-child(2) {
+
+    margin-right: 2%;
+    margin-left: 1%;
+}
+
+#second-first-left-driver {
+    margin-left: 40%;
+    width: 100%;
+}
+
+#second-first-left-driver > input {
+    margin-left: 1%;
+    width: 26%;
+    margin-bottom: 1%;
+}
+
+#second-first-left-storehouse {
+    margin-left: 40%;
+    width: 100%;
+}
+
+#second-first-left-storehouse > select {
+    width: 26.3%;
+
+}
+
+#second-first-right {
+    display: inline-block;
+    width: 45%;
+    height: 100%;
+    margin: 0;
+}
+
+#second-first-right-fuelingTime input {
+    display: inline-block;
+
+}
+
+#second-first-right-plate {
+    width: 100%;
+}
+
+#second-first-right-fuelingTime {
+    width: 100%;
+}
+
+#second-first-right-fuelingTime input {
+    display: inline-block;
+}

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="tpl/header::head">
+</head>
+<body ng-app="scriptApp" ng-controller="vehicleQueryCtrl">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="tpl/side::div"></div>
+    <input type="hidden" id="type" th:value="${type}"/>
+    <div class="layui-body layui-main">
+        <div class="x-nav">
+            <div class="tips-header" style="">
+                <a href="#">
+                    <h2>车辆查询</h2>
+                </a>
+                <div class="layui-collapse" lay-filter="test">
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">
+                            <span class="layui-breadcrumb" style="visibility: visible;">
+                              <a href="/">首页</a><span lay-separator="">/</span>
+                              <a href="#">车辆管理</a><span lay-separator="">/</span>
+                              <a><cite>车辆查询</cite></a>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <fieldset class="layui-elem-field">
+            <div style="margin:auto 10%;">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">城市:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="city" ng-model="commit.city"
+                                           class="layui-input" id="city">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">所属仓库:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="warehouse" id="warehouse" ng-model="commit.warehouse"
+                                           lay-verify="required|number"
+                                           autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">车牌号码:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="number" id="carNumber" ng-model="commit.carNumber"
+                                           lay-verify="required|number"
+                                           autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">车辆状态:</label>
+                                <div class="layui-input-block">
+                                    <select class="user-select" name="vehicleStatus" id="vehicleStatus"
+                                            ng-model="vehicleStatus">
+                                        <option value="">全部</option>
+                                        <option value="1">启用</option>
+                                        <option value="0" selected="">停用</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">保险状态:</label>
+                                <div class="layui-input-block">
+                                    <select class="user-select" name="insuranceStatus" id="insuranceStatus"
+                                            ng-model="insuranceStatus">
+                                        <option value="">全部</option>
+                                        <option value="4" selected="">未上传</option>
+                                        <option value="0">正常</option>
+                                        <option value="3" selected="">即将到期</option>
+                                        <option value="1">已过期</option>
+                                        <!--<option value="2">待生效</option>-->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">年检状态:</label>
+                                <div class="layui-input-block">
+                                    <select class="user-select" name="carCheckStstus" id="carCheckStstus"
+                                            ng-model="carCheckStstus">
+                                        <option value="">全部</option>
+                                        <option value="0">正常</option>
+                                        <option value="2">已过期</option>
+                                        <option value="1">即将到期</option>
+                                        <option value="3">未上传</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="grid-demo">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">违章状态:</label>
+                                <div class="layui-input-block">
+                                    <select class="user-select" name="violationStatus" id="violationStatus"
+                                            ng-model="violationStatus">
+                                        <option value="">全部</option>
+                                        <option value="0">无未处理违章</option>
+                                        <option value="1">有未处理违章</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-btn-group" style="margin-left: 40%; margin-top:2%;">
+                    <button class="layui-btn" ng-click="queryByCondition(this)">查询</button>
+                    <button class="layui-btn " ng-click="clearData()">清空</button>
+                </div>
+            </div>
+            <fieldset class="layui-elem-field" style="margin-top: 20px;">
+                <legend text="车辆查询列表">车辆查询列表</legend>
+                <table class="layui-table custom-table" lay-even="" lay-skin="row">
+                    <thead>
+                    <tr>
+                        <th width="4%">序号</th>
+                        <th width="5%">城市</th>
+                        <th width="7%">车牌号</th>
+                        <th width="7%">车辆品牌</th>
+                        <th width="8%">车辆类型</th>
+                        <th width="5%">所属仓库</th>
+                        <th width="10%">加油卡账号</th>
+                        <th width="8%">保险到期时间</th>
+                        <th width="7%">保险状态</th>
+                        <th width="11%">年检有效期止</th>
+                        <th width="7%">年检状态</th>
+                        <th width="5%">总行驶里程数</th>
+                        <th width="8%">未处理违法记录</th>
+                        <th width="5%">车辆状态</th>
+                        <th class="layui-icon" width="8%">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="carAllInfo in vm.carAllInfos">
+                        <td ng-bind="($index + 1)+((paginationConf.currentPage-1)*paginationConf.itemsPerPage)"></td>
+                        <td ng-bind="carAllInfo.city"></td>
+                        <td ng-bind="carAllInfo.carNumber"></td>
+                        <td ng-bind="carAllInfo.brandModelNumber"></td>
+                        <td ng-bind="carAllInfo.vehicleType"></td>
+                        <td ng-bind="carAllInfo.warehouse"></td>
+                        <td ng-bind="carAllInfo.viceCardNumber == null?'无':carAllInfo.viceCardNumber"></td>
+                        <td ng-bind="carAllInfo.stopDate == null?'无':carAllInfo.stopDate | date:'yyyy-MM-dd'"></td>
+                        <td ng-bind="carAllInfo.insuranceStatus == null?'未上传':carAllInfo.insuranceStatus"></td>
+                        <td ng-bind="carAllInfo.validityDate == null?'无':carAllInfo.validityDate | date:'yyyy-MM-dd'"></td>
+                        <td ng-bind="carAllInfo.vehicleValidityStatus == null?'未上传':carAllInfo.vehicleValidityStatus"></td>
+                        <td ng-bind="carAllInfo.currentMileage == null?'无':carAllInfo.currentMileage"></td>
+                        <!-- ng-bind="carAllInfo.violationNumber == null?'0' +'条':carAllInfo.violationNumber +'条'"-->
+                        <td>
+                            <span style="color: red;"
+                                  ng-if="carAllInfo.violationNumber != null && carAllInfo.violationNumber != 0"
+                                  ng-bind="carAllInfo.violationNumber +'条'"></span>
+                            <span ng-if="carAllInfo.violationNumber == null || carAllInfo.violationNumber == 0"
+                                  ng-bind="'0条'"></span>
+                        </td>
+
+                        <td ng-bind="carAllInfo.status===true? '启用':'停用'"></td>
+                        <td>
+                            <a ng-href="/vehicle/vehicleDetails/{{carAllInfo.carNumber}}"
+                               class="layui-btn layui-btn-primary layui-btn-xs" title="详情">
+                                <i class="layui-icon">详情</i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="page-right" style="padding-right: 5%;">
+                    <tm-pagination conf="paginationConf"></tm-pagination>
+                </div>
+            </fieldset>
+            <div id="vehicleQuery" style="margin-left: 30%;"></div>
+        </fieldset>
+    </div>
+
+    <script src="/modules/vehicle/vehicleQueryCtrl.js"></script>
+
+</div>
+</body>
+</html>

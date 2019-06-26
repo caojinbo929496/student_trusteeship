@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meng.student.trusteeship.dao.drivertime.VehicleDrivingTimeInformationMapper">
+    <resultMap id="BaseResultMap"
+               type="com.meng.student.trusteeship.entity.vehicle.po.VehicleDrivingTimeInformationPO">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="driver_id" property="driverId" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime" jdbcType="TIMESTAMP"/>
+        <result column="stop_time" property="stopTime" jdbcType="TIMESTAMP"/>
+        <result column="car_number" property="carNumber" jdbcType="VARCHAR"/>
+        <result column="car_id" property="carId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="save" parameterType="com.meng.student.trusteeship.entity.vehicle.po.VehicleDrivingTimeInformationPO">
+        INSERT INTO vehicle_driving_time_information (id, driver_id, start_time,stop_time, car_number, car_id ) VALUES(
+        #{id,jdbcType=VARCHAR}, #{driverId,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP},
+        #{stopTime,jdbcType=TIMESTAMP}, #{carNumber,jdbcType=VARCHAR}, #{carId,jdbcType=VARCHAR}
+        )
+    </select>
+    <select id="updateVehicleDrivingTime"
+            parameterType="com.meng.student.trusteeship.entity.vehicle.po.VehicleDrivingTimeInformationPO">
+        UPDATE vehicle_driving_time_information SET stop_time = #{stopTime,jdbcType=TIMESTAMP} WHERE id =
+        #{id,jdbcType=VARCHAR}
+    </select>
+    <select id="getTodayRecordByCarNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select t0.* from (SELECT * FROM vehicle_driving_time_information WHERE car_number = #{carNumber}) t0,
+        (select max(start_time) as start_time, car_number from vehicle_driving_time_information group by car_number) t1
+        where t0.car_number = t1.car_number and t0.start_time = t1.start_time;
+    </select>
+    <select id="getLastInfoByPatenteId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select t0.* from (SELECT * FROM vehicle_driving_time_information WHERE driver_id = #{patenteId}) t0,
+        (select max(start_time) as start_time, car_number from vehicle_driving_time_information group by car_number) t1
+        where t0.car_number = t1.car_number and t0.start_time = t1.start_time;
+    </select>
+    <select id="getOffenderByCarNumberAndTime" parameterType="java.util.Map" resultType="java.lang.String">
+        SELECT driver_id FROM vehicle_driving_time_information
+        WHERE car_number = #{carNumber} and start_time &lt; #{violationTime} AND stop_time &gt; #{violationTime};
+    </select>
+</mapper>
