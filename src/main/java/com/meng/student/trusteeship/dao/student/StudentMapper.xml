@@ -6,14 +6,48 @@
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="password" property="password" jdbcType="VARCHAR"/>
     </resultMap>
-    <select id="getAdministrator" resultType="com.meng.student.trusteeship.entity.administrator.po.AdministratorPO">
-        select uuid,name,password from administrator where name=#{name} and password=#{password}
+    <select id="listAllStudentByCondition"
+            resultType="com.meng.student.trusteeship.entity.administrator.po.AdministratorPO">
+
+    SELECT * FROM student_base_info sbi
+	LEFT JOIN (SELECT * FROM (SELECT rn.*, row_number() over(partition BY student_id ORDER BY ri.create_time) rn FROM registration_initention ri) rnri WHERE rnri.rn=1)(
+		) mri
+		ON sbi.id = ri.student_id
+	LEFT JOIN payment p
+		ON sbi.id = p.student_id
+        <where>
+            <if test="studentName != null">
+                AND  sbi.student_name LIKE '%${studentName}%'
+            </if>
+            <if test="studentPhone != null">
+                AND  sbi.studentPhone LIKE '%${studentPhone}%'
+            </if>
+            <if test="intention != null">
+                AND  sbi.intention LIKE #{intention,jdbcType=INTEGER}
+            </if>
+            <if test="parentName != null">
+                AND (sbi.parent1Name LIKE '%${parentName}%' OR sbi.parent2Name LIKE '%${parentName}%')
+            </if>
+            <if test="registrationStartTime != null">
+                AND mri.registration_time &gt;= #{registrationStartTime,jdbcType=TINYINT}
+            </if>
+            <if test="registrationStartTime != null">
+                AND mri.registration_time &gt;= #{registrationEndTime,jdbcType=TINYINT}
+            </if>
+        </where>
     </select>
-    <select id="getAdministratorById" parameterType="java.lang.String" resultMap="BaseResultMap">
+
+    <select id="insertStudent" parameterType="com.meng.student.trusteeship.entity.student.pojo.Student">
         select * from administrator where uuid = #{id}
+        INSERT INTO student (id, student_name, student_phone, school_class, sex, home_address, parent_name1, parant1_phone, parent_name2, parant2_phone, registration_time, update_time) VALUE
+         (#{id,jdbcType=VARCHAR}, #{student_name,jdbcType=VARCHAR}, #{student_phone,jdbcType=INTEGER}, #{school_class,jdbcType=VARCHAR}, #{sex,jdbcType=BIT}, #{home_address,jdbcType=VARCHAR},
+         #{parent_name1,jdbcType=VARCHAR}, #{parant1_phone,jdbcType=INTEGER}, #{parent_name2,jdbcType=VARCHAR}, #{parant2_phone,jdbcType=INTEGER}, #{registration_time,jdbcType=TIMESTAMP}, #{update_time,jdbcType=TIMESTAMP})
     </select>
-    <select id="addAdministrator" parameterType="com.meng.student.trusteeship.entity.administrator.po.AdministratorPO">
-        INSERT INTO administrator (uuid, name, password)
-        VALUES (#{uuid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR})
+
+    <select id="insertRegistrationIntention"
+            parameterType="com.meng.student.trusteeship.entity.student.pojo.RegistrationIntention">
+        INSERT INTO registration_intention (id, studentId, intention, deposit, isRenew, contactResult, contactTime, createTime)
+        VALUES (#{uuid,jdbcType=VARCHAR}, #{studentId,jdbcType=VARCHAR}, #{intention,jdbcType=INTEGER},
+        #{deposit,jdbcType=DECIMAL}, #{isRenew,jdbcType=BIT}, #{contactResult,jdbcType=VARCHAR}, #{contactTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
     </select>
 </mapper>
